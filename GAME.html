@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pac-Man Biology Edition</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:black;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+#gameContainer{
+    position:relative;
+}
+
+canvas{
+    background:black;
+    border:5px solid #4d7cff;
+    border-radius:20px;
+
+    box-shadow:
+    0 0 20px #4d7cff,
+    0 0 40px #4d7cff,
+    0 0 80px #4d7cff;
+
+    max-width:95vw;
+    max-height:95vh;
+
+    width:auto;
+    height:auto;
+}
+
+#hud{
+    position:absolute;
+    top:10px;
+    left:15px;
+
+    color:white;
+    font-size:28px;
+    font-weight:bold;
+
+    text-shadow:
+    0 0 10px white,
+    0 0 20px white;
+
+    z-index:10;
+
+    display:flex;
+    gap:25px;
+}
+
+#questionBox{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%, -50%);
+
+    width:500px;
+
+    background:#111;
+    border:4px solid #4d7cff;
+    border-radius:20px;
+
+    padding:25px;
+
+    color:white;
+
+    display:none;
+
+    z-index:100;
+
+    box-shadow:
+    0 0 20px #4d7cff,
+    0 0 40px #4d7cff;
+}
+
+#questionText{
+    font-size:24px;
+    margin-bottom:20px;
+}
+
+.optionBtn{
+
+    width:100%;
+    padding:15px;
+
+    margin-top:10px;
+
+    background:#222;
+    color:white;
+
+    border:none;
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:18px;
+
+    transition:0.2s;
+}
+
+.optionBtn:hover{
+    background:#4d7cff;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="gameContainer">
+
+<div id="hud">
+<div>❤️ Vidas: <span id="lives">3</span></div>
+<div>⭐ Puntos: <span id="score">0</span></div>
+<div>🟣 Pastillas: <span id="power">0</span>/10</div>
+</div>
+
+<div id="questionBox">
+<div id="questionText"></div>
+
+<button class="optionBtn" id="opt0"></button>
+<button class="optionBtn" id="opt1"></button>
+<button class="optionBtn" id="opt2"></button>
+<button class="optionBtn" id="opt3"></button>
+</div>
+
+<canvas id="game"></canvas>
+
+</div>
+
+<script src="game.js"></script>
+
+</body>
+</html>
