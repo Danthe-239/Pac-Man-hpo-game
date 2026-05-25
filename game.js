@@ -6,8 +6,8 @@ canvas.height = 720;
 
 const TILE = 32;
 
-const offsetX = 30;
-const offsetY = 60;
+const offsetX = 40;
+const offsetY = 70;
 
 const livesEl = document.getElementById("lives");
 const scoreEl = document.getElementById("score");
@@ -47,107 +47,82 @@ const map = [
 
 ];
 
-const pellets = [];
-const powerPellets = [];
-
+let pellets = [];
 let score = 0;
 let lives = 3;
-let powers = 0;
+
+let pelletsEaten = 0;
+
+let estrogenBar = 0;
+let progesteroneBar = 0;
+let lhBar = 0;
+
+let estrogenMode = false;
+let progesteroneMode = false;
+let lhMode = false;
 
 const questions = [
 
 {
-q:"¿Qué órgano libera el óvulo?",
-o:["Ovario","Corazón","Pulmón","Riñón"],
-a:0
-},
-
-{
-q:"¿Cuánto dura un ciclo menstrual promedio?",
-o:["7 días","14 días","28 días","60 días"],
-a:2
-},
-
-{
 q:"¿Qué hormona provoca la ovulación?",
 o:["LH","Insulina","Adrenalina","Melatonina"],
-a:0
+a:0,
+power:"lh"
+},
+
+{
+q:"¿Qué órgano libera el óvulo?",
+o:["Ovario","Pulmón","Riñón","Corazón"],
+a:0,
+power:"estrogen"
 },
 
 {
 q:"¿Dónde ocurre la fecundación?",
-o:["Útero","Pulmón","Trompas de Falopio","Corazón"],
-a:2
-},
-
-{
-q:"¿Qué célula fecunda el óvulo?",
-o:["Neurona","Esperma","Plaqueta","Glóbulo rojo"],
-a:1
-},
-
-{
-q:"¿Qué órgano alberga al bebé?",
-o:["Pulmón","Útero","Riñón","Hígado"],
-a:1
+o:["Pulmón","Corazón","Trompas de Falopio","Hígado"],
+a:2,
+power:"progesterone"
 },
 
 {
 q:"¿Qué hormona aumenta en el embarazo?",
-o:["hCG","Testosterona","Dopamina","Serotonina"],
-a:0
+o:["hCG","Insulina","Testosterona","Dopamina"],
+a:0,
+power:"progesterone"
 },
 
 {
-q:"¿Qué ocurre en la menstruación?",
-o:["El útero elimina tejido","Se rompen huesos","Se detiene el corazón","Crecen dientes"],
-a:0
+q:"¿Qué dura aproximadamente 28 días?",
+o:["Digestión","Ciclo menstrual","Sueño","Latido"],
+a:1,
+power:"estrogen"
 },
 
 {
-q:"¿Cuál es el gameto femenino?",
+q:"¿Qué gameto es masculino?",
 o:["Óvulo","Esperma","Neurona","Plaqueta"],
-a:0
-},
-
-{
-q:"¿Cuál es el gameto masculino?",
-o:["Esperma","Óvulo","Cabello","Hueso"],
-a:0
-},
-
-{
-q:"¿Qué hormona regula el ciclo menstrual?",
-o:["Estrógeno","Saliva","Insulina","Melanina"],
-a:0
-},
-
-{
-q:"¿Qué órgano produce espermatozoides?",
-o:["Testículos","Pulmón","Cerebro","Riñón"],
-a:0
+a:1,
+power:"lh"
 }
 
 ];
 
 function createPellets(){
 
+pellets = [];
+
 for(let row=0; row<map.length; row++){
 
 for(let col=0; col<map[row].length; col++){
 
-const x = offsetX + col*TILE + TILE/2;
-const y = offsetY + row*TILE + TILE/2;
-
 if(map[row][col] === "0"){
 
-pellets.push({x,y});
+pellets.push({
 
-}
+x: offsetX + col*TILE + TILE/2,
+y: offsetY + row*TILE + TILE/2
 
-if(map[row][col] === "2"){
-
-powerPellets.push({x,y});
+});
 
 }
 
@@ -166,10 +141,9 @@ y: offsetY + TILE*1.5,
 
 radius: 14,
 
-speed: 8,
+speed: 4.2,
 
-direction: 0,
-nextDirection: 0
+direction: 0
 
 };
 
@@ -179,7 +153,7 @@ const enemies = [
 x: offsetX + TILE*14,
 y: offsetY + TILE*10,
 color:"red",
-speed:2.2,
+speed:2.0,
 angle:0
 },
 
@@ -195,7 +169,7 @@ angle:0
 x: offsetX + TILE*14,
 y: offsetY + TILE*11,
 color:"lime",
-speed:2.0,
+speed:1.9,
 angle:0
 },
 
@@ -203,7 +177,7 @@ angle:0
 x: offsetX + TILE*15,
 y: offsetY + TILE*11,
 color:"orange",
-speed:2.3,
+speed:2.2,
 angle:0
 },
 
@@ -211,7 +185,7 @@ angle:0
 x: offsetX + TILE*13,
 y: offsetY + TILE*10,
 color:"pink",
-speed:2.1,
+speed:2.0,
 angle:0
 },
 
@@ -219,7 +193,7 @@ angle:0
 x: offsetX + TILE*16,
 y: offsetY + TILE*10,
 color:"purple",
-speed:2.2,
+speed:2.1,
 angle:0
 }
 
@@ -229,32 +203,29 @@ const keys = {};
 
 window.addEventListener("keydown",(e)=>{
 
-keys[e.key.toLowerCase()] = true;
+keys[e.key] = true;
 
 });
 
 window.addEventListener("keyup",(e)=>{
 
-keys[e.key.toLowerCase()] = false;
+keys[e.key] = false;
 
 });
 
 function wallCollision(x,y,radius){
 
-const left = Math.floor((x - radius - offsetX)/TILE);
-const right = Math.floor((x + radius - offsetX)/TILE);
+const left = Math.floor((x-radius-offsetX)/TILE);
+const right = Math.floor((x+radius-offsetX)/TILE);
 
-const top = Math.floor((y - radius - offsetY)/TILE);
-const bottom = Math.floor((y + radius - offsetY)/TILE);
+const top = Math.floor((y-radius-offsetY)/TILE);
+const bottom = Math.floor((y+radius-offsetY)/TILE);
 
-for(let row = top; row <= bottom; row++){
+for(let row=top; row<=bottom; row++){
 
-for(let col = left; col <= right; col++){
+for(let col=left; col<=right; col++){
 
-if(
-map[row] &&
-map[row][col] === "1"
-){
+if(map[row] && map[row][col] === "1"){
 
 return true;
 
@@ -265,6 +236,164 @@ return true;
 }
 
 return false;
+
+}
+
+function movePlayer(){
+
+let dx = 0;
+let dy = 0;
+
+if(keys["ArrowUp"]){
+
+dy = -player.speed;
+player.direction = -Math.PI/2;
+
+}
+
+if(keys["ArrowDown"]){
+
+dy = player.speed;
+player.direction = Math.PI/2;
+
+}
+
+if(keys["ArrowLeft"]){
+
+dx = -player.speed;
+player.direction = Math.PI;
+
+}
+
+if(keys["ArrowRight"]){
+
+dx = player.speed;
+player.direction = 0;
+
+}
+
+const nextX = player.x + dx;
+const nextY = player.y + dy;
+
+if(!wallCollision(nextX,player.y,player.radius)){
+
+player.x = nextX;
+
+}
+
+if(!wallCollision(player.x,nextY,player.radius)){
+
+player.y = nextY;
+
+}
+
+}
+
+let mouth = 0;
+
+function drawPlayer(){
+
+ctx.save();
+
+ctx.translate(player.x,player.y);
+
+ctx.rotate(player.direction);
+
+mouth += 0.15;
+
+const open = Math.abs(Math.sin(mouth))*0.25;
+
+ctx.fillStyle = "yellow";
+
+ctx.beginPath();
+
+ctx.arc(
+0,
+0,
+player.radius,
+open*Math.PI,
+(2-open)*Math.PI
+);
+
+ctx.lineTo(0,0);
+
+ctx.fill();
+
+ctx.restore();
+
+}
+
+function drawEnemy(enemy){
+
+ctx.save();
+
+ctx.translate(enemy.x,enemy.y);
+
+ctx.rotate(enemy.angle);
+
+ctx.fillStyle = enemy.color;
+
+ctx.beginPath();
+
+ctx.ellipse(0,0,7,5,0,0,Math.PI*2);
+
+ctx.fill();
+
+ctx.beginPath();
+
+ctx.moveTo(-8,0);
+
+for(let i=0;i<12;i++){
+
+ctx.lineTo(
+-8 - i*3,
+Math.sin(Date.now()/90+i)*3
+);
+
+}
+
+ctx.strokeStyle = enemy.color;
+ctx.lineWidth = 2;
+
+ctx.stroke();
+
+ctx.restore();
+
+}
+
+function moveEnemies(){
+
+enemies.forEach(enemy=>{
+
+const dx = player.x - enemy.x;
+const dy = player.y - enemy.y;
+
+enemy.angle = Math.atan2(dy,dx);
+
+let speed = enemy.speed;
+
+if(progesteroneMode){
+
+speed *= 0.5;
+
+}
+
+const moveX = Math.cos(enemy.angle) * speed;
+const moveY = Math.sin(enemy.angle) * speed;
+
+if(!wallCollision(enemy.x+moveX,enemy.y,8)){
+
+enemy.x += moveX;
+
+}
+
+if(!wallCollision(enemy.x,enemy.y+moveY,8)){
+
+enemy.y += moveY;
+
+}
+
+});
 
 }
 
@@ -323,187 +452,6 @@ ctx.fill();
 
 });
 
-powerPellets.forEach(p=>{
-
-ctx.beginPath();
-
-ctx.arc(
-p.x,
-p.y,
-8,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-});
-
-}
-
-let mouth = 0;
-
-function drawPlayer(){
-
-ctx.save();
-
-ctx.translate(player.x,player.y);
-
-ctx.rotate(player.direction);
-
-mouth += 0.22;
-
-const open = Math.abs(Math.sin(mouth))*0.28;
-
-ctx.fillStyle = "yellow";
-
-ctx.beginPath();
-
-ctx.arc(
-0,
-0,
-player.radius,
-open*Math.PI,
-(2-open)*Math.PI
-);
-
-ctx.lineTo(0,0);
-
-ctx.fill();
-
-ctx.restore();
-
-}
-
-function drawEnemy(enemy){
-
-ctx.save();
-
-ctx.translate(enemy.x,enemy.y);
-
-ctx.rotate(enemy.angle);
-
-ctx.fillStyle = enemy.color;
-
-ctx.beginPath();
-
-ctx.ellipse(0,0,7,5,0,0,Math.PI*2);
-
-ctx.fill();
-
-ctx.beginPath();
-
-ctx.moveTo(-8,0);
-
-for(let i=0;i<12;i++){
-
-ctx.lineTo(
--8 - i*3,
-Math.sin(Date.now()/100 + i)*3
-);
-
-}
-
-ctx.strokeStyle = enemy.color;
-ctx.lineWidth = 2;
-
-ctx.stroke();
-
-ctx.restore();
-
-}
-
-function drawEnemies(){
-
-enemies.forEach(enemy=>{
-
-drawEnemy(enemy);
-
-});
-
-}
-
-function movePlayer(){
-
-if(keys["arrowup"] || keys["w"]){
-
-player.nextDirection = -Math.PI/2;
-
-}
-
-if(keys["arrowdown"] || keys["s"]){
-
-player.nextDirection = Math.PI/2;
-
-}
-
-if(keys["arrowleft"] || keys["a"]){
-
-player.nextDirection = Math.PI;
-
-}
-
-if(keys["arrowright"] || keys["d"]){
-
-player.nextDirection = 0;
-
-}
-
-const testX =
-player.x + Math.cos(player.nextDirection) * player.speed;
-
-const testY =
-player.y + Math.sin(player.nextDirection) * player.speed;
-
-if(!wallCollision(testX,testY,player.radius)){
-
-player.direction = player.nextDirection;
-
-}
-
-const nextX =
-player.x + Math.cos(player.direction) * player.speed;
-
-const nextY =
-player.y + Math.sin(player.direction) * player.speed;
-
-if(!wallCollision(nextX,nextY,player.radius)){
-
-player.x = nextX;
-player.y = nextY;
-
-}
-
-}
-
-function moveEnemies(){
-
-enemies.forEach(enemy=>{
-
-const dx = player.x - enemy.x;
-const dy = player.y - enemy.y;
-
-enemy.angle = Math.atan2(dy,dx);
-
-const speed = enemy.speed;
-
-const moveX = Math.cos(enemy.angle) * speed;
-const moveY = Math.sin(enemy.angle) * speed;
-
-if(!wallCollision(enemy.x + moveX, enemy.y, 8)){
-
-enemy.x += moveX;
-
-}
-
-if(!wallCollision(enemy.x, enemy.y + moveY, 8)){
-
-enemy.y += moveY;
-
-}
-
-});
-
 }
 
 function eatPellets(){
@@ -519,39 +467,47 @@ if(dist < 18){
 
 pellets.splice(index,1);
 
-score += 10;
+pelletsEaten++;
+
+let points = 10;
+
+if(estrogenMode){
+
+points *= 2;
 
 }
 
-});
+score += points;
 
-powerPellets.forEach((p,index)=>{
+if(pelletsEaten >= 10){
 
-const dx = player.x - p.x;
-const dy = player.y - p.y;
-
-const dist = Math.sqrt(dx*dx + dy*dy);
-
-if(dist < 20){
-
-powerPellets.splice(index,1);
-
-powers++;
-
-score += 50;
+pelletsEaten = 0;
 
 showQuestion();
 
 }
 
+}
+
 });
+
+if(pellets.length === 0){
+
+createPellets();
+
+enemies.forEach(enemy=>{
+
+enemy.speed += 0.2;
+
+});
+
+}
 
 }
 
 function showQuestion(){
 
-const q =
-questions[
+const q = questions[
 Math.floor(Math.random()*questions.length)
 ];
 
@@ -566,6 +522,26 @@ btn.onclick = ()=>{
 if(index === q.a){
 
 score += 100;
+
+if(q.power === "estrogen"){
+
+estrogenBar += 25;
+
+}
+
+if(q.power === "progesterone"){
+
+progesteroneBar += 25;
+
+}
+
+if(q.power === "lh"){
+
+lhBar += 25;
+
+}
+
+activatePowers();
 
 }else{
 
@@ -583,6 +559,52 @@ questionBox.style.display = "block";
 
 }
 
+function activatePowers(){
+
+if(estrogenBar >= 100){
+
+estrogenBar = 0;
+
+estrogenMode = true;
+
+setTimeout(()=>{
+
+estrogenMode = false;
+
+},8000);
+
+}
+
+if(progesteroneBar >= 100){
+
+progesteroneBar = 0;
+
+progesteroneMode = true;
+
+setTimeout(()=>{
+
+progesteroneMode = false;
+
+},8000);
+
+}
+
+if(lhBar >= 100){
+
+lhBar = 0;
+
+lhMode = true;
+
+setTimeout(()=>{
+
+lhMode = false;
+
+},8000);
+
+}
+
+}
+
 function checkEnemyCollision(){
 
 enemies.forEach(enemy=>{
@@ -594,14 +616,25 @@ const dist = Math.sqrt(dx*dx + dy*dy);
 
 if(dist < 20){
 
+if(lhMode){
+
+enemy.x = offsetX + TILE*14;
+enemy.y = offsetY + TILE*10;
+
+score += 250;
+
+}else{
+
 lives--;
 
 player.x = offsetX + TILE*1.5;
 player.y = offsetY + TILE*1.5;
 
+}
+
 if(lives <= 0){
 
-alert("💀 GAME OVER");
+alert("💀 GAME OVER\nPUNTAJE: " + score);
 
 location.reload();
 
@@ -613,11 +646,29 @@ location.reload();
 
 }
 
-function updateHUD(){
+function drawHUD(){
 
-scoreEl.innerText = score;
-livesEl.innerText = lives;
-powerEl.innerText = powers;
+ctx.fillStyle = "white";
+
+ctx.font = "22px Arial";
+
+ctx.fillText("❤️ Vidas: " + lives,40,35);
+
+ctx.fillText("⭐ Puntos: " + score,250,35);
+
+ctx.fillText("🟣 Pastillas: " + pelletsEaten + "/10",520,35);
+
+ctx.fillText("🧬 Estrógeno",760,30);
+ctx.strokeRect(760,40,100,12);
+ctx.fillRect(760,40,estrogenBar,12);
+
+ctx.fillText("🛡 Progesterona",760,70);
+ctx.strokeRect(760,80,100,12);
+ctx.fillRect(760,80,progesteroneBar,12);
+
+ctx.fillText("⚡ LH",760,110);
+ctx.strokeRect(760,120,100,12);
+ctx.fillRect(760,120,lhBar,12);
 
 }
 
@@ -633,15 +684,15 @@ eatPellets();
 
 checkEnemyCollision();
 
-updateHUD();
-
 drawWalls();
 
 drawPellets();
 
 drawPlayer();
 
-drawEnemies();
+enemies.forEach(drawEnemy);
+
+drawHUD();
 
 }
 
