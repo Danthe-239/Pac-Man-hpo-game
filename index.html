@@ -1,43 +1,238 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>OvuPac</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
 
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
+body{
+    background:
+    radial-gradient(circle at top,#11194a 0%,#040612 60%);
+    font-family:Courier New, monospace;
+    overflow:hidden;
+    color:white;
+}
+
+/* ===== MENU ===== */
+
+#menuScreen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:10;
+}
+
+.menuBox{
+    width:720px;
+    max-width:90%;
+    background:black;
+    border:4px solid #ff4fd8;
+    border-radius:35px;
+    padding:50px;
+    text-align:center;
+
+    box-shadow:
+    0 0 20px #ff4fd8,
+    0 0 60px #ff4fd8;
+}
+
+.title{
+    font-size:72px;
+    color:#ff4fd8;
+    margin-bottom:25px;
+    text-shadow:0 0 20px #ff4fd8;
+}
+
+.subtitle{
+    color:#b6c4ff;
+    font-size:28px;
+    margin-bottom:35px;
+}
+
+.menuText{
+    text-align:left;
+    width:80%;
+    margin:auto;
+    line-height:2;
+    font-size:24px;
+}
+
+.playBtn{
+    margin-top:40px;
+    border:none;
+    background:#ff4fd8;
+    color:white;
+    padding:18px 60px;
+    font-size:34px;
+    border-radius:18px;
+    cursor:pointer;
+    font-weight:bold;
+
+    box-shadow:0 0 20px #ff4fd8;
+}
+
+.playBtn:hover{
+    transform:scale(1.05);
+}
+
+/* ===== GAME ===== */
+
+#gameScreen{
+    display:none;
+    width:100vw;
+    height:100vh;
+    padding:20px;
+}
+
+.topBar{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:25px;
+    margin-bottom:10px;
+}
+
+.stat{
+    background:#050816;
+    border:2px solid #3b6fff;
+    border-radius:15px;
+    padding:12px 30px;
+    font-size:22px;
+
+    box-shadow:0 0 15px #3b6fff;
+}
+
+.gameLayout{
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    gap:20px;
+}
+
+canvas{
+    background:black;
+    border:4px solid #ff4fd8;
+    border-radius:18px;
+
+    box-shadow:
+    0 0 20px #ff4fd8,
+    0 0 50px #ff4fd8;
+}
+
+.sidebar{
+    width:300px;
+    background:black;
+    border:3px solid #ff4fd8;
+    border-radius:20px;
+    padding:20px;
+
+    box-shadow:0 0 25px #ff4fd8;
+}
+
+.sidebar h2{
+    margin-bottom:20px;
+    color:#ff4fd8;
+}
+
+.power{
+    margin-bottom:18px;
+}
+
+.bar{
+    width:100%;
+    height:18px;
+    background:#222;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:6px;
+}
+
+.fill{
+    height:100%;
+    width:0%;
+    background:#ff4fd8;
+}
+
+#questionBox{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.75);
+
+    display:none;
+    justify-content:center;
+    align-items:center;
+
+    z-index:20;
+}
+
+.questionCard{
+    width:700px;
+    max-width:90%;
+    background:#080b25;
+    border:4px solid #ff4fd8;
+    border-radius:30px;
+    padding:40px;
+
+    box-shadow:
+    0 0 30px #ff4fd8,
+    0 0 60px #ff4fd8;
+}
+
+.questionTitle{
+    font-size:28px;
+    margin-bottom:30px;
+    line-height:1.5;
+}
+
+.option{
+    background:#13173a;
+    border:2px solid #3b6fff;
+    padding:18px;
+    border-radius:15px;
+    margin-bottom:15px;
+    cursor:pointer;
+    font-size:20px;
+}
+
+.option:hover{
+    background:#1d255f;
+}
+
+</style>
 </head>
-
 <body>
 
-<!-- PANTALLA INICIO -->
+<!-- MENU -->
 
-<div id="startScreen">
+<div id="menuScreen">
 
-    <div class="startCard">
+    <div class="menuBox">
 
-        <h1>🌸 OvuPac 🌸</h1>
+        <div class="title">🌸 OvuPac 🌸</div>
 
-        <p class="subtitle">
+        <div class="subtitle">
             Ciclo Menstrual & Eje HPO
-        </p>
-
-        <div class="info">
-
-            <p>🧠 Responde preguntas</p>
-            <p>⚡ Desbloquea poderes hormonales</p>
-            <p>🧬 Sobrevive a los espermas IA</p>
-            <p>💖 Juego infinito retro arcade</p>
-
         </div>
 
-        <button id="playBtn">
+        <div class="menuText">
+            🧠 Responde preguntas<br>
+            ⚡ Desbloquea poderes hormonales<br>
+            🧬 Sobrevive a los espermas IA<br>
+            ❤️ Juego infinito retro arcade
+        </div>
+
+        <button class="playBtn" id="playBtn">
             JUGAR
         </button>
 
@@ -45,119 +240,77 @@
 
 </div>
 
-<!-- HUD -->
+<!-- GAME -->
 
-<div id="hud">
+<div id="gameScreen">
 
-    <div class="hudBox">
-        ❤️ Vidas:
-        <span id="lives">3</span>
-    </div>
+    <div class="topBar">
 
-    <div class="hudBox">
-        ⭐ Puntos:
-        <span id="score">0</span>
-    </div>
-
-    <div class="hudBox">
-        🧠 Preguntas:
-        <span id="questionCount">0</span>
-    </div>
-
-</div>
-
-<!-- PODERES -->
-
-<div id="powersPanel">
-
-    <h3>⚡ PODERES</h3>
-
-    <div class="powerItem">
-
-        <p>[1] Estrógeno</p>
-
-        <div class="bar">
-            <div id="bar1"></div>
-        </div>
+        <div class="stat">❤️ Vidas: <span id="lives">3</span></div>
+        <div class="stat">⭐ Puntos: <span id="score">0</span></div>
+        <div class="stat">🧠 Preguntas: <span id="questions">0</span></div>
 
     </div>
 
-    <div class="powerItem">
+    <div class="gameLayout">
 
-        <p>[2] LH</p>
+        <canvas id="gameCanvas"></canvas>
 
-        <div class="bar">
-            <div id="bar2"></div>
-        </div>
+        <div class="sidebar">
 
-    </div>
+            <h2>⚡ PODERES</h2>
 
-    <div class="powerItem">
+            <div class="power">
+                [1] Estrógeno
+                <div class="bar"><div class="fill" id="power1"></div></div>
+            </div>
 
-        <p>[3] FSH</p>
+            <div class="power">
+                [2] LH
+                <div class="bar"><div class="fill" id="power2"></div></div>
+            </div>
 
-        <div class="bar">
-            <div id="bar3"></div>
-        </div>
+            <div class="power">
+                [3] FSH
+                <div class="bar"><div class="fill" id="power3"></div></div>
+            </div>
 
-    </div>
+            <div class="power">
+                [4] Progesterona
+                <div class="bar"><div class="fill" id="power4"></div></div>
+            </div>
 
-    <div class="powerItem">
+            <div class="power">
+                [5] Ovulación
+                <div class="bar"><div class="fill" id="power5"></div></div>
+            </div>
 
-        <p>[4] Progesterona</p>
+            <div class="power">
+                [6] Fase Folicular
+                <div class="bar"><div class="fill" id="power6"></div></div>
+            </div>
 
-        <div class="bar">
-            <div id="bar4"></div>
-        </div>
-
-    </div>
-
-    <div class="powerItem">
-
-        <p>[5] Ovulación</p>
-
-        <div class="bar">
-            <div id="bar5"></div>
-        </div>
-
-    </div>
-
-    <div class="powerItem">
-
-        <p>[6] Fase Folicular</p>
-
-        <div class="bar">
-            <div id="bar6"></div>
         </div>
 
     </div>
 
 </div>
 
-<!-- PREGUNTAS -->
+<!-- QUESTIONS -->
 
-<div id="questionModal" class="hidden">
+<div id="questionBox">
 
     <div class="questionCard">
 
-        <h2 id="questionText"></h2>
+        <div class="questionTitle" id="questionText"></div>
 
-        <div id="answers"></div>
+        <div id="options"></div>
 
     </div>
-
-</div>
-
-<!-- GAME -->
-
-<div id="gameContainer">
-
-    <canvas id="game"></canvas>
 
 </div>
 
 <script src="game.js"></script>
 
 </body>
-
 </html>
