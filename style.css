@@ -1,58 +1,346 @@
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+
+margin:0;
+padding:0;
+box-sizing:border-box;
+
 }
 
 body{
 
-    background:black;
+background:
+radial-gradient(circle,#11163a,#02030a);
 
-    overflow:hidden;
+font-family:'Press Start 2P',cursive;
 
-    font-family:Arial;
+overflow:hidden;
+
+color:white;
+
+}
+
+/* GAME */
+
+#gameContainer{
+
+width:100vw;
+height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
 
 }
 
-#game{
+canvas{
 
-    position:absolute;
+background:black;
 
-    left:50%;
-    top:50%;
+border:4px solid #ff4fd8;
 
-    transform:translate(-50%,-50%);
+border-radius:20px;
 
-    background:black;
-
-    border:5px solid #4d7cff;
-
-    box-shadow:
-    0 0 20px #4d7cff,
-    0 0 50px #4d7cff;
+box-shadow:
+0 0 20px #ff4fd8,
+0 0 50px #5b7dff;
 
 }
+
+/* HUD */
 
 #hud{
 
-    position:absolute;
+position:absolute;
 
-    top:15px;
-    left:15px;
+top:15px;
+left:50%;
 
-    z-index:100;
+transform:translateX(-50%);
 
-    color:white;
+display:flex;
+gap:25px;
 
-    font-size:24px;
-
-    text-shadow:
-    0 0 10px white;
+z-index:10;
 
 }
 
-#hud div{
+.hudBox{
 
-    margin-bottom:8px;
+background:rgba(0,0,0,.7);
+
+padding:15px 20px;
+
+border-radius:12px;
+
+border:2px solid #5b7dff;
+
+font-size:10px;
+
+box-shadow:
+0 0 10px #5b7dff;
+
+}
+
+/* POWERS */
+
+#powersPanel{
+
+position:absolute;
+
+right:20px;
+top:100px;
+
+width:280px;
+
+background:rgba(0,0,0,.75);
+
+padding:20px;
+
+border-radius:20px;
+
+border:2px solid #ff4fd8;
+
+display:flex;
+flex-direction:column;
+gap:18px;
+
+box-shadow:
+0 0 20px #ff4fd8;
+
+}
+
+#powersPanel h3{
+
+text-align:center;
+
+font-size:14px;
+
+margin-bottom:10px;
+
+color:#ff4fd8;
+
+}
+
+.powerItem p{
+
+font-size:9px;
+
+margin-bottom:8px;
+
+}
+
+.bar{
+
+width:100%;
+height:14px;
+
+background:#222;
+
+border-radius:10px;
+
+overflow:hidden;
+
+}
+
+.bar div{
+
+width:0%;
+height:100%;
+
+background:
+linear-gradient(
+90deg,
+#ff4fd8,
+#5b7dff
+);
+
+}
+
+/* START SCREEN */
+
+#startScreen{
+
+position:absolute;
+
+width:100%;
+height:100%;
+
+background:
+radial-gradient(circle,#141d44,#02030a);
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+z-index:100;
+
+}
+
+.startCard{
+
+width:650px;
+
+background:rgba(0,0,0,.8);
+
+padding:50px;
+
+border-radius:30px;
+
+border:3px solid #ff4fd8;
+
+text-align:center;
+
+box-shadow:
+0 0 40px #ff4fd8;
+
+}
+
+.startCard h1{
+
+font-size:30px;
+
+color:#ff4fd8;
+
+margin-bottom:25px;
+
+}
+
+.subtitle{
+
+font-size:11px;
+
+margin-bottom:30px;
+
+color:#9da7ff;
+
+}
+
+.info{
+
+display:flex;
+flex-direction:column;
+gap:18px;
+
+margin-bottom:40px;
+
+font-size:10px;
+
+line-height:1.8;
+
+}
+
+#playBtn{
+
+padding:18px 45px;
+
+background:#ff4fd8;
+
+border:none;
+
+border-radius:14px;
+
+font-family:'Press Start 2P',cursive;
+
+font-size:14px;
+
+color:white;
+
+cursor:pointer;
+
+transition:.2s;
+
+}
+
+#playBtn:hover{
+
+transform:scale(1.08);
+
+}
+
+/* QUESTIONS */
+
+#questionModal{
+
+position:absolute;
+
+width:100%;
+height:100%;
+
+background:rgba(0,0,0,.7);
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+z-index:50;
+
+}
+
+.questionCard{
+
+width:750px;
+
+background:#0e1433;
+
+padding:40px;
+
+border-radius:25px;
+
+border:3px solid #ff4fd8;
+
+box-shadow:
+0 0 30px #ff4fd8;
+
+}
+
+#questionText{
+
+font-size:13px;
+
+line-height:2;
+
+margin-bottom:30px;
+
+text-align:center;
+
+}
+
+.answerBtn{
+
+width:100%;
+
+padding:18px;
+
+margin:12px 0;
+
+background:#18204f;
+
+border:none;
+
+border-radius:12px;
+
+color:white;
+
+font-family:'Press Start 2P',cursive;
+
+font-size:10px;
+
+cursor:pointer;
+
+transition:.2s;
+
+}
+
+.answerBtn:hover{
+
+background:#ff4fd8;
+
+transform:scale(1.02);
+
+}
+
+.hidden{
+
+display:none;
 
 }
