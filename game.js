@@ -1,111 +1,155 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-canvas.width = 1100;
-canvas.height = 720;
+canvas.width = 900;
+canvas.height = 700;
 
-const TILE = 32;
+/* =========================
+   START SCREEN
+========================= */
 
-const offsetX = 40;
-const offsetY = 70;
+const startScreen = document.getElementById("startScreen");
+const playBtn = document.getElementById("playBtn");
 
-const livesEl = document.getElementById("lives");
-const scoreEl = document.getElementById("score");
-const powerEl = document.getElementById("power");
+let gameStarted = false;
 
-const questionBox = document.getElementById("questionBox");
-const questionText = document.getElementById("questionText");
+playBtn.onclick = () => {
 
-const optionButtons = [
-document.getElementById("opt0"),
-document.getElementById("opt1"),
-document.getElementById("opt2"),
-document.getElementById("opt3")
+    startScreen.style.display = "none";
+
+    gameStarted = true;
+
+};
+
+/* =========================
+   HUD
+========================= */
+
+const livesText = document.getElementById("lives");
+const scoreText = document.getElementById("score");
+const questionCountText =
+document.getElementById("questionCount");
+
+/* =========================
+   POWER BARS
+========================= */
+
+const bars = [
+
+document.getElementById("bar1"),
+document.getElementById("bar2"),
+document.getElementById("bar3"),
+document.getElementById("bar4"),
+document.getElementById("bar5"),
+document.getElementById("bar6")
+
 ];
+
+let powerLevels = [0,0,0,0,0,0];
+
+/* =========================
+   MAP
+========================= */
+
+const TILE = 36;
 
 const map = [
 
-"111111111111111111111111111111",
-"100000000000000000000000000001",
-"101110111101111111101111011101",
-"102000100001000000100001000201",
-"101110111101111111101111011101",
-"100000000000000000000000000001",
-"101110111111011110111111011101",
-"100000000000010000000000000001",
-"111110111011111110111011111111",
-"100000100010000010000100000001",
-"111110101111044011110101111111",
-"100000100000000000000100000001",
-"111110101111111111110101111111",
-"100000100000000000000100000001",
-"111110101111111111110101111111",
-"100000000000010000000000000001",
-"101110111111011110111111011101",
-"102000000001000000100000000201",
-"111111111111111111111111111111"
+"11111111111111111111111",
+"10000000000000000000001",
+"10111011101110111011101",
+"10000010000000100000001",
+"10111010111110101110101",
+"10000000000000000000001",
+"10111110111110111110101",
+"10000010000000100000001",
+"11111010111110101111101",
+"10000000000000000000001",
+"10111111101110111111101",
+"10000000000000000000001",
+"11111111111111111111111"
 
 ];
 
-let pellets = [];
-let score = 0;
-let lives = 3;
+/* =========================
+   PLAYER
+========================= */
 
-let pelletsEaten = 0;
+const pacman = {
 
-let estrogenBar = 0;
-let progesteroneBar = 0;
-let lhBar = 0;
+x: TILE * 1.5,
+y: TILE * 1.5,
 
-let estrogenMode = false;
-let progesteroneMode = false;
-let lhMode = false;
+radius: 14,
 
-const questions = [
+speed: 4,
 
-{
-q:"¿Qué hormona provoca la ovulación?",
-o:["LH","Insulina","Adrenalina","Melatonina"],
-a:0,
-power:"lh"
-},
+dirX: 0,
+dirY: 0,
 
-{
-q:"¿Qué órgano libera el óvulo?",
-o:["Ovario","Pulmón","Riñón","Corazón"],
-a:0,
-power:"estrogen"
-},
+mouth: 0
 
-{
-q:"¿Dónde ocurre la fecundación?",
-o:["Pulmón","Corazón","Trompas de Falopio","Hígado"],
-a:2,
-power:"progesterone"
-},
+};
 
-{
-q:"¿Qué hormona aumenta en el embarazo?",
-o:["hCG","Insulina","Testosterona","Dopamina"],
-a:0,
-power:"progesterone"
-},
+/* =========================
+   CONTROLS
+========================= */
 
-{
-q:"¿Qué dura aproximadamente 28 días?",
-o:["Digestión","Ciclo menstrual","Sueño","Latido"],
-a:1,
-power:"estrogen"
-},
+const keys = {};
 
-{
-q:"¿Qué gameto es masculino?",
-o:["Óvulo","Esperma","Neurona","Plaqueta"],
-a:1,
-power:"lh"
+window.addEventListener("keydown", e => {
+
+keys[e.key] = true;
+
+});
+
+window.addEventListener("keyup", e => {
+
+keys[e.key] = false;
+
+});
+
+/* =========================
+   ENEMIES
+========================= */
+
+const enemies = [];
+
+const enemyColors = [
+
+"#ff4fd8",
+"#00e5ff",
+"#7cff00",
+"#ff9d00",
+"#ff4d4d",
+"#9d4dff"
+
+];
+
+for(let i=0;i<6;i++){
+
+enemies.push({
+
+x: 500 + Math.random()*100,
+y: 300 + Math.random()*100,
+
+radius: 11,
+
+speed: 2,
+
+color: enemyColors[i],
+
+tailOffset: Math.random()*1000
+
+});
+
 }
 
-];
+/* =========================
+   PELLETS
+========================= */
+
+let pellets = [];
 
 function createPellets(){
 
@@ -119,8 +163,8 @@ if(map[row][col] === "0"){
 
 pellets.push({
 
-x: offsetX + col*TILE + TILE/2,
-y: offsetY + row*TILE + TILE/2
+x: col*TILE + TILE/2,
+y: row*TILE + TILE/2
 
 });
 
@@ -134,100 +178,42 @@ y: offsetY + row*TILE + TILE/2
 
 createPellets();
 
-const player = {
+/* =========================
+   GAME STATS
+========================= */
 
-x: offsetX + TILE*1.5,
-y: offsetY + TILE*1.5,
+let score = 0;
+let lives = 3;
+let questionsAnswered = 0;
+let pelletsEaten = 0;
 
-radius: 14,
+/* =========================
+   WALL COLLISION
+========================= */
 
-speed: 2.8,
+function wallCollision(x,y,r){
 
-direction: 0
+for(let row=0; row<map.length; row++){
 
-};
+for(let col=0; col<map[row].length; col++){
 
-const enemies = [
+if(map[row][col] === "1"){
 
-{
-x: offsetX + TILE*14,
-y: offsetY + TILE*10,
-color:"red",
-speed:2.0,
-angle:0
-},
+const wallX = col*TILE;
+const wallY = row*TILE;
 
-{
-x: offsetX + TILE*15,
-y: offsetY + TILE*10,
-color:"cyan",
-speed:2.1,
-angle:0
-},
+if(
 
-{
-x: offsetX + TILE*14,
-y: offsetY + TILE*11,
-color:"lime",
-speed:1.9,
-angle:0
-},
+x+r > wallX &&
+x-r < wallX+TILE &&
+y+r > wallY &&
+y-r < wallY+TILE
 
-{
-x: offsetX + TILE*15,
-y: offsetY + TILE*11,
-color:"orange",
-speed:2.2,
-angle:0
-},
-
-{
-x: offsetX + TILE*13,
-y: offsetY + TILE*10,
-color:"pink",
-speed:2.0,
-angle:0
-},
-
-{
-x: offsetX + TILE*16,
-y: offsetY + TILE*10,
-color:"purple",
-speed:2.1,
-angle:0
-}
-
-];
-
-const keys = {};
-
-window.addEventListener("keydown",(e)=>{
-
-keys[e.key] = true;
-
-});
-
-window.addEventListener("keyup",(e)=>{
-
-keys[e.key] = false;
-
-});
-
-function wallCollision(x,y,radius){
-
-const left = Math.floor((x-radius-offsetX)/TILE);
-const right = Math.floor((x+radius-offsetX)/TILE);
-
-const top = Math.floor((y-radius-offsetY)/TILE);
-const bottom = Math.floor((y+radius-offsetY)/TILE);
-
-for(let row=top; row<=bottom; row++){
-
-for(let col=left; col<=right; col++){
-
-if(map[row] && map[row][col] === "1"){
+){
 
 return true;
+
+}
 
 }
 
@@ -239,157 +225,71 @@ return false;
 
 }
 
-function movePlayer(){
+/* =========================
+   PLAYER MOVE
+========================= */
 
-let dx = 0;
-let dy = 0;
+function movePacman(){
 
-if(keys["ArrowUp"]){
+pacman.dirX = 0;
+pacman.dirY = 0;
 
-dy = -player.speed;
-player.direction = -Math.PI/2;
+if(keys["ArrowUp"]) pacman.dirY = -1;
+if(keys["ArrowDown"]) pacman.dirY = 1;
+if(keys["ArrowLeft"]) pacman.dirX = -1;
+if(keys["ArrowRight"]) pacman.dirX = 1;
 
-}
+const nextX =
+pacman.x + pacman.dirX * pacman.speed;
 
-if(keys["ArrowDown"]){
+const nextY =
+pacman.y + pacman.dirY * pacman.speed;
 
-dy = player.speed;
-player.direction = Math.PI/2;
+if(!wallCollision(nextX,pacman.y,pacman.radius)){
 
-}
-
-if(keys["ArrowLeft"]){
-
-dx = -player.speed;
-player.direction = Math.PI;
-
-}
-
-if(keys["ArrowRight"]){
-
-dx = player.speed;
-player.direction = 0;
+pacman.x = nextX;
 
 }
 
-const nextX = player.x + dx;
-const nextY = player.y + dy;
+if(!wallCollision(pacman.x,nextY,pacman.radius)){
 
-if(!wallCollision(nextX,player.y,player.radius)){
-
-player.x = nextX;
-
-}
-
-if(!wallCollision(player.x,nextY,player.radius)){
-
-player.y = nextY;
+pacman.y = nextY;
 
 }
 
 }
 
-let mouth = 0;
-
-function drawPlayer(){
-
-ctx.save();
-
-ctx.translate(player.x,player.y);
-
-ctx.rotate(player.direction);
-
-mouth += 0.15;
-
-const open = Math.abs(Math.sin(mouth))*0.25;
-
-ctx.fillStyle = "yellow";
-
-ctx.beginPath();
-
-ctx.arc(
-0,
-0,
-player.radius,
-open*Math.PI,
-(2-open)*Math.PI
-);
-
-ctx.lineTo(0,0);
-
-ctx.fill();
-
-ctx.restore();
-
-}
-
-function drawEnemy(enemy){
-
-ctx.save();
-
-ctx.translate(enemy.x,enemy.y);
-
-ctx.rotate(enemy.angle);
-
-ctx.fillStyle = enemy.color;
-
-ctx.beginPath();
-
-ctx.ellipse(0,0,7,5,0,0,Math.PI*2);
-
-ctx.fill();
-
-ctx.beginPath();
-
-ctx.moveTo(-8,0);
-
-for(let i=0;i<12;i++){
-
-ctx.lineTo(
--8 - i*3,
-Math.sin(Date.now()/90+i)*3
-);
-
-}
-
-ctx.strokeStyle = enemy.color;
-ctx.lineWidth = 2;
-
-ctx.stroke();
-
-ctx.restore();
-
-}
+/* =========================
+   ENEMY AI
+========================= */
 
 function moveEnemies(){
 
 enemies.forEach(enemy=>{
 
-const dx = player.x - enemy.x;
-const dy = player.y - enemy.y;
+const dx = pacman.x - enemy.x;
+const dy = pacman.y - enemy.y;
 
-enemy.angle = Math.atan2(dy,dx);
+const dist = Math.sqrt(dx*dx + dy*dy);
 
-let speed = enemy.speed;
+const moveX = dx/dist;
+const moveY = dy/dist;
 
-if(progesteroneMode){
+const nextX =
+enemy.x + moveX * enemy.speed;
 
-speed *= 0.5;
+const nextY =
+enemy.y + moveY * enemy.speed;
 
-}
+if(!wallCollision(nextX,enemy.y,enemy.radius)){
 
-const moveX = Math.cos(enemy.angle) * speed;
-const moveY = Math.sin(enemy.angle) * speed;
-
-if(!wallCollision(enemy.x+moveX,enemy.y,8)){
-
-enemy.x += moveX;
+enemy.x = nextX;
 
 }
 
-if(!wallCollision(enemy.x,enemy.y+moveY,8)){
+if(!wallCollision(enemy.x,nextY,enemy.radius)){
 
-enemy.y += moveY;
+enemy.y = nextY;
 
 }
 
@@ -397,14 +297,11 @@ enemy.y += moveY;
 
 }
 
-function drawWalls(){
+/* =========================
+   DRAW MAP
+========================= */
 
-ctx.strokeStyle = "#4d7cff";
-
-ctx.lineWidth = 4;
-
-ctx.shadowBlur = 15;
-ctx.shadowColor = "#4d7cff";
+function drawMap(){
 
 for(let row=0; row<map.length; row++){
 
@@ -412,14 +309,16 @@ for(let col=0; col<map[row].length; col++){
 
 if(map[row][col] === "1"){
 
-const x = offsetX + col*TILE;
-const y = offsetY + row*TILE;
+ctx.fillStyle = "#263dff";
 
-ctx.strokeRect(
-x+2,
-y+2,
-TILE-4,
-TILE-4
+ctx.shadowBlur = 15;
+ctx.shadowColor = "#4d7dff";
+
+ctx.fillRect(
+col*TILE,
+row*TILE,
+TILE,
+TILE
 );
 
 }
@@ -432,9 +331,13 @@ ctx.shadowBlur = 0;
 
 }
 
+/* =========================
+   DRAW PELLETS
+========================= */
+
 function drawPellets(){
 
-ctx.fillStyle = "hotpink";
+ctx.fillStyle = "#ff9be8";
 
 pellets.forEach(p=>{
 
@@ -443,7 +346,7 @@ ctx.beginPath();
 ctx.arc(
 p.x,
 p.y,
-3,
+4,
 0,
 Math.PI*2
 );
@@ -454,40 +357,118 @@ ctx.fill();
 
 }
 
+/* =========================
+   DRAW PACMAN
+========================= */
+
+function drawPacman(){
+
+pacman.mouth += 0.18;
+
+const open =
+Math.abs(Math.sin(pacman.mouth))*0.70;
+
+ctx.fillStyle = "yellow";
+
+ctx.beginPath();
+
+ctx.arc(
+
+pacman.x,
+pacman.y,
+
+pacman.radius,
+
+open*Math.PI,
+(2-open)*Math.PI
+
+);
+
+ctx.lineTo(pacman.x,pacman.y);
+
+ctx.fill();
+
+}
+
+/* =========================
+   DRAW ENEMIES
+========================= */
+
+function drawEnemies(){
+
+enemies.forEach(enemy=>{
+
+ctx.strokeStyle = enemy.color;
+
+ctx.lineWidth = 4;
+
+ctx.beginPath();
+
+ctx.moveTo(enemy.x,enemy.y);
+
+for(let i=0;i<12;i++){
+
+ctx.lineTo(
+
+enemy.x - i*5,
+
+enemy.y +
+Math.sin(Date.now()/100+i)*5
+
+);
+
+}
+
+ctx.stroke();
+
+ctx.fillStyle = enemy.color;
+
+ctx.beginPath();
+
+ctx.arc(
+enemy.x,
+enemy.y,
+enemy.radius,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+});
+
+}
+
+/* =========================
+   EAT PELLETS
+========================= */
+
 function eatPellets(){
 
-pellets.forEach((p,index)=>{
+pellets = pellets.filter(p=>{
 
-const dx = player.x - p.x;
-const dy = player.y - p.y;
+const dx = pacman.x - p.x;
+const dy = pacman.y - p.y;
 
 const dist = Math.sqrt(dx*dx + dy*dy);
 
 if(dist < 18){
 
-pellets.splice(index,1);
+score += 10;
 
 pelletsEaten++;
 
-let points = 10;
+if(pelletsEaten % 15 === 0){
 
-if(estrogenMode){
-
-points *= 2;
+questionsAnswered++;
 
 }
 
-score += points;
-
-if(pelletsEaten >= 10){
-
-pelletsEaten = 0;
-
-showQuestion();
+return false;
 
 }
 
-}
+return true;
 
 });
 
@@ -495,146 +476,33 @@ if(pellets.length === 0){
 
 createPellets();
 
-enemies.forEach(enemy=>{
-
-enemy.speed += 0.2;
-
-});
-
 }
 
 }
 
-function showQuestion(){
+/* =========================
+   COLLISIONS
+========================= */
 
-const q = questions[
-Math.floor(Math.random()*questions.length)
-];
-
-questionText.innerText = q.q;
-
-optionButtons.forEach((btn,index)=>{
-
-btn.innerText = q.o[index];
-
-btn.onclick = ()=>{
-
-if(index === q.a){
-
-score += 100;
-
-if(q.power === "estrogen"){
-
-estrogenBar += 25;
-
-}
-
-if(q.power === "progesterone"){
-
-progesteroneBar += 25;
-
-}
-
-if(q.power === "lh"){
-
-lhBar += 25;
-
-}
-
-activatePowers();
-
-}else{
-
-lives--;
-
-}
-
-questionBox.style.display = "none";
-
-};
-
-});
-
-questionBox.style.display = "block";
-
-}
-
-function activatePowers(){
-
-if(estrogenBar >= 100){
-
-estrogenBar = 0;
-
-estrogenMode = true;
-
-setTimeout(()=>{
-
-estrogenMode = false;
-
-},8000);
-
-}
-
-if(progesteroneBar >= 100){
-
-progesteroneBar = 0;
-
-progesteroneMode = true;
-
-setTimeout(()=>{
-
-progesteroneMode = false;
-
-},8000);
-
-}
-
-if(lhBar >= 100){
-
-lhBar = 0;
-
-lhMode = true;
-
-setTimeout(()=>{
-
-lhMode = false;
-
-},8000);
-
-}
-
-}
-
-function checkEnemyCollision(){
+function enemyCollision(){
 
 enemies.forEach(enemy=>{
 
-const dx = player.x - enemy.x;
-const dy = player.y - enemy.y;
+const dx = pacman.x - enemy.x;
+const dy = pacman.y - enemy.y;
 
 const dist = Math.sqrt(dx*dx + dy*dy);
 
 if(dist < 20){
 
-if(lhMode){
-
-enemy.x = offsetX + TILE*14;
-enemy.y = offsetY + TILE*10;
-
-score += 250;
-
-}else{
-
 lives--;
 
-player.x = offsetX + TILE*1.5;
-player.y = offsetY + TILE*1.5;
-
-}
+pacman.x = TILE*1.5;
+pacman.y = TILE*1.5;
 
 if(lives <= 0){
 
-alert("💀 GAME OVER\nPUNTAJE: " + score);
+alert("GAME OVER");
 
 location.reload();
 
@@ -646,62 +514,76 @@ location.reload();
 
 }
 
-function drawHUD(){
+/* =========================
+   UPDATE HUD
+========================= */
 
-ctx.fillStyle = "white";
+function updateHUD(){
 
-ctx.font = "22px Arial";
+livesText.textContent = lives;
 
-ctx.fillText("❤️ Vidas: " + lives,40,35);
+scoreText.textContent = score;
 
-ctx.fillText("⭐ Puntos: " + score,250,35);
+questionCountText.textContent =
+questionsAnswered;
 
-ctx.fillText("🟣 Pastillas: " + pelletsEaten + "/10",520,35);
+bars.forEach((bar,index)=>{
 
-ctx.fillText("🧬 Estrógeno",760,30);
-ctx.strokeRect(760,40,100,12);
-ctx.fillRect(760,40,estrogenBar,12);
+powerLevels[index] += 0.03;
 
-ctx.fillText("🛡 Progesterona",760,70);
-ctx.strokeRect(760,80,100,12);
-ctx.fillRect(760,80,progesteroneBar,12);
+if(powerLevels[index] > 100){
 
-ctx.fillText("⚡ LH",760,110);
-ctx.strokeRect(760,120,100,12);
-ctx.fillRect(760,120,lhBar,12);
+powerLevels[index] = 100;
 
 }
 
+bar.style.width =
+powerLevels[index] + "%";
+
+});
+
+}
+
+/* =========================
+   GAME LOOP
+========================= */
+
 function gameLoop(){
 
-ctx.clearRect(0,0,canvas.width,canvas.height);
+if(!gameStarted){
 
-movePlayer();
+requestAnimationFrame(gameLoop);
+return;
+
+}
+
+ctx.clearRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+movePacman();
 
 moveEnemies();
 
 eatPellets();
 
-checkEnemyCollision();
+enemyCollision();
 
-drawWalls();
+drawMap();
 
 drawPellets();
 
-drawPlayer();
+drawPacman();
 
-enemies.forEach(drawEnemy);
+drawEnemies();
 
-drawHUD();
+updateHUD();
+
+requestAnimationFrame(gameLoop);
 
 }
-
-function animate(){
 
 gameLoop();
-
-requestAnimationFrame(animate);
-
-}
-
-animate();
