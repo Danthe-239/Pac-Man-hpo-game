@@ -141,7 +141,7 @@ y: offsetY + TILE*1.5,
 
 radius: 14,
 
-speed: 4.2,
+speed: 2.8,
 
 direction: 0
 
