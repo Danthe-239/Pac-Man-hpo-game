@@ -1,0 +1,58 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    background:black;
+
+    overflow:hidden;
+
+    font-family:Arial;
+
+}
+
+#game{
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    background:black;
+
+    border:5px solid #4d7cff;
+
+    box-shadow:
+    0 0 20px #4d7cff,
+    0 0 50px #4d7cff;
+
+}
+
+#hud{
+
+    position:absolute;
+
+    top:15px;
+    left:15px;
+
+    z-index:100;
+
+    color:white;
+
+    font-size:24px;
+
+    text-shadow:
+    0 0 10px white;
+
+}
+
+#hud div{
+
+    margin-bottom:8px;
+
+}
