@@ -1,16 +1,16 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-/* =========================
+/* =========================================
    CANVAS
-========================= */
+========================================= */
 
-canvas.width = 900;
+canvas.width = 896;
 canvas.height = 640;
 
-/* =========================
+/* =========================================
    MENU
-========================= */
+========================================= */
 
 const menuScreen =
 document.getElementById("menuScreen");
@@ -33,9 +33,9 @@ playBtn.onclick = () => {
 
 };
 
-/* =========================
+/* =========================================
    HUD
-========================= */
+========================================= */
 
 const livesText =
 document.getElementById("lives");
@@ -46,9 +46,9 @@ document.getElementById("score");
 const questionsText =
 document.getElementById("questions");
 
-/* =========================
+/* =========================================
    POWER BARS
-========================= */
+========================================= */
 
 const powerBars = [
 
@@ -63,52 +63,52 @@ document.getElementById("power6")
 
 let powers = [0,0,0,0,0,0];
 
-/* =========================
+/* =========================================
    MAP
-========================= */
+========================================= */
 
 const TILE = 32;
 
 const map = [
 
-"#########################",
-"#.......................#",
-"#.#####.#######.#####...#",
-"#.......................#",
-"#.###.###.#.###.###.###.#",
-"#.......................#",
-"#.#####.#.#.#.#.#####...#",
-"#.........#.#.........###",
-"###.#####.....#####.#####",
-"#.......................#",
-"#.#####.#######.#####...#",
-"#.......................#",
-"#.###.###.#.###.###.###.#",
-"#.......................#",
-"#.#####.#.#.#.#.#####...#",
-"#.......................#",
-"#########################"
+"############################",
+"#............##............#",
+"#.######.###.##.###.######.#",
+"#..........................#",
+"#.######.#.######.#.######.#",
+"#........#...##...#........#",
+"######.#.### ## ###.#.######",
+"#......#..........#........#",
+"#.######.###--###.######.#.#",
+"#..........................#",
+"#.######.#.######.#.######.#",
+"#...##...#...##...#...##...#",
+"###.##.#####.##.#####.##.###",
+"#..........................#",
+"#.######.###.##.###.######.#",
+"#..........................#",
+"############################"
 
 ];
 
 const rows = map.length;
 const cols = map[0].length;
 
-/* =========================
+/* =========================================
    PLAYER
-========================= */
+========================================= */
 
 const pacman = {
 
-x: 1.5,
-y: 1.5,
+x: 1.5 * TILE,
+y: 1.5 * TILE,
 
-radius: 14,
+radius: 10,
 
-speed: 0.75,
+speed: 210,
 
-dirX: 0,
-dirY: 0,
+vx: 0,
+vy: 0,
 
 angle: 0,
 
@@ -116,18 +116,18 @@ mouth: 0
 
 };
 
-/* =========================
+/* =========================================
    GHOSTS
-========================= */
+========================================= */
 
 const ghostColors = [
 
 "#ff006e",
 "#00e5ff",
-"#9d4edd",
-"#ffd60a",
-"#70e000",
-"#ff7b00"
+"#ffbe0b",
+"#8338ec",
+"#3a86ff",
+"#70e000"
 
 ];
 
@@ -137,27 +137,29 @@ for(let i=0;i<6;i++){
 
 ghosts.push({
 
-x: 12 + (i%3),
-y: 8 + Math.floor(i/3),
+x: 13*TILE + (i%3)*20,
+y: 8*TILE + Math.floor(i/3)*20,
 
-radius: 11,
+radius: 8,
+
+speed: 120,
+
+vx: 0,
+vy: 0,
 
 color: ghostColors[i],
 
-dirX: 0,
-dirY: 0,
+dirTimer: 0,
 
-moveCooldown: 0,
-
-tailOffset: Math.random()*1000
+tailSeed: Math.random()*1000
 
 });
 
 }
 
-/* =========================
+/* =========================================
    PELLETS
-========================= */
+========================================= */
 
 let pellets = [];
 
@@ -173,8 +175,8 @@ if(map[row][col] === "."){
 
 pellets.push({
 
-x: col + 0.5,
-y: row + 0.5,
+x: col*TILE + TILE/2,
+y: row*TILE + TILE/2,
 
 eaten:false
 
@@ -190,18 +192,18 @@ eaten:false
 
 createPellets();
 
-/* =========================
-   GAME STATS
-========================= */
+/* =========================================
+   STATS
+========================================= */
 
 let score = 0;
 let lives = 3;
-let questionsAnswered = 0;
 let pelletsEaten = 0;
+let questionsAnswered = 0;
 
-/* =========================
+/* =========================================
    QUESTIONS
-========================= */
+========================================= */
 
 const questionBox =
 document.getElementById("questionBox");
@@ -217,15 +219,39 @@ let gamePaused = false;
 const questions = [
 
 {
-q:"¿Qué hormona desencadena la ovulación?",
-a:["FSH","LH","Estrógeno","Progesterona"],
+q:"¿Qué hormona provoca la ovulación?",
+a:["FSH","LH","Progesterona","Estrógeno"],
 c:1
 },
 
 {
 q:"¿Qué hormona domina la fase lútea?",
-a:["LH","Progesterona","FSH","Estrógeno"],
-c:1
+a:["Progesterona","LH","FSH","Insulina"],
+c:0
+},
+
+{
+q:"¿Qué órgano libera GnRH?",
+a:["Hipotálamo","Útero","Ovario","Hipófisis"],
+c:0
+},
+
+{
+q:"¿Qué hormona estimula los folículos?",
+a:["FSH","LH","Progesterona","Cortisol"],
+c:0
+},
+
+{
+q:"¿Qué hormona aumenta antes de ovular?",
+a:["LH","Cortisol","Insulina","Adrenalina"],
+c:0
+},
+
+{
+q:"¿Qué hormona mantiene el endometrio?",
+a:["Progesterona","FSH","LH","GH"],
+c:0
 },
 
 {
@@ -233,52 +259,17 @@ q:"¿Qué significa HPO?",
 a:[
 "Hipotálamo Pituitaria Ovario",
 "Hormona Progesterona Ovulación",
-"Hormona Pituitaria Ovárica",
-"Hipotálamo Progesterona Ovulación"
+"Hipotálamo Progesterona Ovulación",
+"Hormona Pituitaria Ovárica"
 ],
-c:0
-},
-
-{
-q:"¿Dónde se producen los estrógenos?",
-a:[
-"Ovarios",
-"Hígado",
-"Hipotálamo",
-"Útero"
-],
-c:0
-},
-
-{
-q:"¿Qué hormona estimula el crecimiento folicular?",
-a:["FSH","Progesterona","LH","Cortisol"],
-c:0
-},
-
-{
-q:"¿Qué hormona aumenta antes de ovular?",
-a:["LH","Insulina","Progesterona","Cortisol"],
-c:0
-},
-
-{
-q:"¿Qué órgano produce GnRH?",
-a:["Hipotálamo","Ovario","Hipófisis","Útero"],
-c:0
-},
-
-{
-q:"¿Qué hormona mantiene el endometrio?",
-a:["Progesterona","FSH","LH","Adrenalina"],
 c:0
 }
 
 ];
 
-/* =========================
+/* =========================================
    CONTROLS
-========================= */
+========================================= */
 
 const keys = {};
 
@@ -294,14 +285,14 @@ keys[e.key] = false;
 
 });
 
-/* =========================
-   WALL COLLISION
-========================= */
+/* =========================================
+   COLLISION
+========================================= */
 
-function wallAt(x,y){
+function wallAtPixel(x,y){
 
-const col = Math.floor(x);
-const row = Math.floor(y);
+const col = Math.floor(x / TILE);
+const row = Math.floor(y / TILE);
 
 if(
 row < 0 ||
@@ -314,91 +305,125 @@ return true;
 
 }
 
-return map[row][col] === "#";
+const cell = map[row][col];
+
+return cell === "#";
 
 }
 
-/* =========================
-   PACMAN MOVE
-========================= */
+function circleWallCollision(x,y,r){
 
-function movePacman(){
+const points = [
+
+[x-r,y-r],
+[x+r,y-r],
+[x-r,y+r],
+[x+r,y+r]
+
+];
+
+for(let p of points){
+
+if(wallAtPixel(p[0],p[1])){
+
+return true;
+
+}
+
+}
+
+return false;
+
+}
+
+/* =========================================
+   PACMAN MOVE
+========================================= */
+
+function movePacman(dt){
 
 if(gamePaused) return;
 
-let nextX = pacman.x;
-let nextY = pacman.y;
+pacman.vx = 0;
+pacman.vy = 0;
 
 if(keys["ArrowLeft"]){
 
-nextX -= pacman.speed;
-
-pacman.dirX = -1;
-pacman.dirY = 0;
-
+pacman.vx = -pacman.speed;
 pacman.angle = Math.PI;
 
 }
 
 if(keys["ArrowRight"]){
 
-nextX += pacman.speed;
-
-pacman.dirX = 1;
-pacman.dirY = 0;
-
+pacman.vx = pacman.speed;
 pacman.angle = 0;
 
 }
 
 if(keys["ArrowUp"]){
 
-nextY -= pacman.speed;
-
-pacman.dirX = 0;
-pacman.dirY = -1;
-
+pacman.vy = -pacman.speed;
 pacman.angle = -Math.PI/2;
 
 }
 
 if(keys["ArrowDown"]){
 
-nextY += pacman.speed;
-
-pacman.dirX = 0;
-pacman.dirY = 1;
-
+pacman.vy = pacman.speed;
 pacman.angle = Math.PI/2;
 
 }
 
-if(!wallAt(nextX,nextY)){
+const nextX =
+pacman.x + pacman.vx * dt;
+
+const nextY =
+pacman.y + pacman.vy * dt;
+
+if(
+!circleWallCollision(
+nextX,
+pacman.y,
+pacman.radius
+)
+){
 
 pacman.x = nextX;
+
+}
+
+if(
+!circleWallCollision(
+pacman.x,
+nextY,
+pacman.radius
+)
+){
+
 pacman.y = nextY;
 
 }
 
-pacman.mouth += 0.62;
+pacman.mouth += dt * 14;
 
 }
 
-/* =========================
+/* =========================================
    GHOST AI
-========================= */
+========================================= */
 
-function moveGhosts(){
+function moveGhosts(dt){
 
 if(gamePaused) return;
 
 ghosts.forEach(g=>{
 
-g.moveCooldown++;
+g.dirTimer -= dt;
 
-if(g.moveCooldown < 8) return;
+if(g.dirTimer <= 0){
 
-g.moveCooldown = 0;
+g.dirTimer = 0.18;
 
 const dirs = [
 
@@ -409,37 +434,81 @@ const dirs = [
 
 ];
 
-let bestMove = null;
+let best = null;
 let bestDist = 999999;
 
 dirs.forEach(d=>{
 
-const nx = g.x + d[0];
-const ny = g.y + d[1];
+const nx =
+g.x + d[0]*TILE;
 
-if(wallAt(nx,ny)) return;
+const ny =
+g.y + d[1]*TILE;
+
+if(
+circleWallCollision(
+nx,
+ny,
+g.radius
+)
+){
+
+return;
+
+}
 
 const dist =
 
-Math.abs(nx - pacman.x) +
-Math.abs(ny - pacman.y);
+Math.hypot(
+pacman.x - nx,
+pacman.y - ny
+);
 
 if(dist < bestDist){
 
 bestDist = dist;
-bestMove = d;
+best = d;
 
 }
 
 });
 
-if(bestMove){
+if(best){
 
-g.x += bestMove[0];
-g.y += bestMove[1];
+g.vx = best[0] * g.speed;
+g.vy = best[1] * g.speed;
 
-g.dirX = bestMove[0];
-g.dirY = bestMove[1];
+}
+
+}
+
+const nextX =
+g.x + g.vx * dt;
+
+const nextY =
+g.y + g.vy * dt;
+
+if(
+!circleWallCollision(
+nextX,
+g.y,
+g.radius
+)
+){
+
+g.x = nextX;
+
+}
+
+if(
+!circleWallCollision(
+g.x,
+nextY,
+g.radius
+)
+){
+
+g.y = nextY;
 
 }
 
@@ -447,9 +516,9 @@ g.dirY = bestMove[1];
 
 }
 
-/* =========================
+/* =========================================
    DRAW MAP
-========================= */
+========================================= */
 
 function drawMap(){
 
@@ -462,9 +531,9 @@ if(map[row][col] === "#"){
 const x = col*TILE;
 const y = row*TILE;
 
-ctx.fillStyle = "#240046";
+ctx.fillStyle = "#18003a";
 
-ctx.shadowBlur = 20;
+ctx.shadowBlur = 12;
 ctx.shadowColor = "#ff006e";
 
 ctx.fillRect(
@@ -495,9 +564,9 @@ ctx.shadowBlur = 0;
 
 }
 
-/* =========================
+/* =========================================
    DRAW PELLETS
-========================= */
+========================================= */
 
 function drawPellets(){
 
@@ -513,8 +582,8 @@ ctx.shadowColor = "#ff87d0";
 ctx.beginPath();
 
 ctx.arc(
-p.x*TILE,
-p.y*TILE,
+p.x,
+p.y,
 3,
 0,
 Math.PI*2
@@ -528,28 +597,30 @@ ctx.shadowBlur = 0;
 
 }
 
-/* =========================
+/* =========================================
    DRAW PACMAN
-========================= */
+========================================= */
 
 function drawPacman(){
-
-const open =
-
-Math.abs(Math.sin(pacman.mouth))*0.70;
 
 ctx.save();
 
 ctx.translate(
-pacman.x*TILE,
-pacman.y*TILE
+pacman.x,
+pacman.y
 );
 
 ctx.rotate(pacman.angle);
 
+const open =
+
+Math.abs(
+Math.sin(pacman.mouth)
+)*0.70;
+
 ctx.fillStyle = "#ffe600";
 
-ctx.shadowBlur = 20;
+ctx.shadowBlur = 18;
 ctx.shadowColor = "#ffe600";
 
 ctx.beginPath();
@@ -572,43 +643,42 @@ ctx.shadowBlur = 0;
 
 }
 
-/* =========================
+/* =========================================
    DRAW GHOSTS
-========================= */
+========================================= */
 
 function drawGhosts(){
 
 ghosts.forEach(g=>{
 
-const x = g.x*TILE;
-const y = g.y*TILE;
-
 ctx.save();
 
-ctx.translate(x,y);
+ctx.translate(g.x,g.y);
 
 let angle = 0;
 
-if(g.dirX === 1) angle = 0;
-if(g.dirX === -1) angle = Math.PI;
-if(g.dirY === 1) angle = Math.PI/2;
-if(g.dirY === -1) angle = -Math.PI/2;
+if(g.vx > 0) angle = 0;
+if(g.vx < 0) angle = Math.PI;
+if(g.vy > 0) angle = Math.PI/2;
+if(g.vy < 0) angle = -Math.PI/2;
 
 ctx.rotate(angle);
 
-/* TAIL */
-
 ctx.beginPath();
 
-ctx.moveTo(-10,0);
+ctx.moveTo(-8,0);
 
 for(let i=0;i<16;i++){
 
 ctx.lineTo(
 
--10-(i*4),
+-8 - i*3,
 
-Math.sin(Date.now()/100+i+g.tailOffset)*4
+Math.sin(
+Date.now()/90 +
+i +
+g.tailSeed
+)*3
 
 );
 
@@ -616,14 +686,12 @@ Math.sin(Date.now()/100+i+g.tailOffset)*4
 
 ctx.strokeStyle = g.color;
 
-ctx.lineWidth = 3;
+ctx.lineWidth = 2;
 
-ctx.shadowBlur = 15;
+ctx.shadowBlur = 14;
 ctx.shadowColor = g.color;
 
 ctx.stroke();
-
-/* HEAD */
 
 ctx.fillStyle = g.color;
 
@@ -632,8 +700,8 @@ ctx.beginPath();
 ctx.ellipse(
 0,
 0,
-12,
-8,
+10,
+6,
 0,
 0,
 Math.PI*2
@@ -641,14 +709,12 @@ Math.PI*2
 
 ctx.fill();
 
-/* EYES */
-
 ctx.fillStyle = "white";
 
 ctx.beginPath();
 
-ctx.arc(3,-2,1.5,0,Math.PI*2);
-ctx.arc(3,2,1.5,0,Math.PI*2);
+ctx.arc(2,-2,1.2,0,Math.PI*2);
+ctx.arc(2,2,1.2,0,Math.PI*2);
 
 ctx.fill();
 
@@ -660,9 +726,9 @@ ctx.shadowBlur = 0;
 
 }
 
-/* =========================
+/* =========================================
    EAT PELLETS
-========================= */
+========================================= */
 
 function eatPellets(){
 
@@ -670,12 +736,14 @@ pellets.forEach(p=>{
 
 if(p.eaten) return;
 
-const dx = p.x - pacman.x;
-const dy = p.y - pacman.y;
+const dist =
 
-const dist = Math.sqrt(dx*dx + dy*dy);
+Math.hypot(
+pacman.x - p.x,
+pacman.y - p.y
+);
 
-if(dist < 0.4){
+if(dist < 14){
 
 p.eaten = true;
 
@@ -695,11 +763,11 @@ showQuestion();
 
 });
 
-const remaining =
+const left =
 
 pellets.filter(p=>!p.eaten);
 
-if(remaining.length === 0){
+if(left.length === 0){
 
 createPellets();
 
@@ -707,9 +775,9 @@ createPellets();
 
 }
 
-/* =========================
+/* =========================================
    QUESTIONS
-========================= */
+========================================= */
 
 function showQuestion(){
 
@@ -767,29 +835,31 @@ optionsBox.appendChild(btn);
 
 }
 
-/* =========================
-   GHOST COLLISION
-========================= */
+/* =========================================
+   COLLISIONS
+========================================= */
 
-function checkGhostCollisions(){
+function checkGhostCollision(){
 
 if(gamePaused) return;
 
 ghosts.forEach(g=>{
 
-const dx = g.x - pacman.x;
-const dy = g.y - pacman.y;
+const dist =
 
-const dist = Math.sqrt(dx*dx + dy*dy);
+Math.hypot(
+pacman.x - g.x,
+pacman.y - g.y
+);
 
-if(dist < 0.6){
+if(dist < 16){
 
 lives--;
 
 livesText.innerText = lives;
 
-pacman.x = 1.5;
-pacman.y = 1.5;
+pacman.x = 1.5*TILE;
+pacman.y = 1.5*TILE;
 
 if(lives <= 0){
 
@@ -805,9 +875,9 @@ location.reload();
 
 }
 
-/* =========================
+/* =========================================
    POWERS
-========================= */
+========================================= */
 
 function updatePowers(){
 
@@ -822,15 +892,23 @@ p + "%";
 
 }
 
-/* =========================
-   LOOP
-========================= */
+/* =========================================
+   GAME LOOP
+========================================= */
 
-function gameLoop(){
+let lastTime = 0;
+
+function gameLoop(timestamp){
 
 requestAnimationFrame(gameLoop);
 
 if(!gameStarted) return;
+
+const dt =
+
+(timestamp - lastTime) / 1000;
+
+lastTime = timestamp;
 
 ctx.clearRect(
 0,
@@ -843,13 +921,13 @@ drawMap();
 
 drawPellets();
 
-movePacman();
+movePacman(dt);
 
-moveGhosts();
+moveGhosts(dt);
 
 eatPellets();
 
-checkGhostCollisions();
+checkGhostCollision();
 
 drawPacman();
 
@@ -859,4 +937,4 @@ updatePowers();
 
 }
 
-gameLoop();
+requestAnimationFrame(gameLoop);
