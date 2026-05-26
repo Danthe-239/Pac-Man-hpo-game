@@ -2,11 +2,13 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 /* =========================================
-   CANVAS
+   PIXEL PERFECT SETTINGS
 ========================================= */
 
-canvas.width = 896;
-canvas.height = 640;
+canvas.width = 864;
+canvas.height = 608;
+
+ctx.imageSmoothingEnabled = false;
 
 /* =========================================
    MENU
@@ -64,30 +66,34 @@ document.getElementById("power6")
 let powers = [0,0,0,0,0,0];
 
 /* =========================================
-   MAP
+   TILE SYSTEM
 ========================================= */
 
 const TILE = 32;
 
+/* =========================================
+   RETRO MAP
+========================================= */
+
 const map = [
 
-"############################",
-"#............##............#",
-"#.######.###.##.###.######.#",
-"#..........................#",
-"#.######.#.######.#.######.#",
-"#........#...##...#........#",
-"######.#.### ## ###.#.######",
-"#......#..........#........#",
-"#.######.###--###.######.#.#",
-"#..........................#",
-"#.######.#.######.#.######.#",
-"#...##...#...##...#...##...#",
-"###.##.#####.##.#####.##.###",
-"#..........................#",
-"#.######.###.##.###.######.#",
-"#..........................#",
-"############################"
+"###########################",
+"#.........................#",
+"#.#####.#######.#####.###.#",
+"#.........................#",
+"#.#####.#.###.#.#####.###.#",
+"#.......#.....#.........#.#",
+"###.###.#####.#####.###.#.#",
+"#.........#.....#.......#.#",
+"#.#####.#.#.###.#.#####.#.#",
+"#.......#...#...#.........#",
+"#.#####.###.#.###.#####.#.#",
+"#.........................#",
+"#.#####.#.#####.#.#####.#.#",
+"#.......#...#...#.......#.#",
+"#.#########.#.#########.#.#",
+"#.........................#",
+"###########################"
 
 ];
 
@@ -100,12 +106,12 @@ const cols = map[0].length;
 
 const pacman = {
 
-x: 1.5 * TILE,
-y: 1.5 * TILE,
+x: TILE * 1.5,
+y: TILE * 1.5,
 
-radius: 10,
+radius: 11,
 
-speed: 210,
+speed: 165,
 
 vx: 0,
 vy: 0,
@@ -122,12 +128,12 @@ mouth: 0
 
 const ghostColors = [
 
-"#ff006e",
+"#ff004d",
 "#00e5ff",
-"#ffbe0b",
-"#8338ec",
-"#3a86ff",
-"#70e000"
+"#ff77a8",
+"#00ff88",
+"#ffcc00",
+"#9d4edd"
 
 ];
 
@@ -142,16 +148,16 @@ y: 8*TILE + Math.floor(i/3)*20,
 
 radius: 8,
 
-speed: 120,
+speed: 110,
 
 vx: 0,
 vy: 0,
 
 color: ghostColors[i],
 
-dirTimer: 0,
+changeDirTimer: 0,
 
-tailSeed: Math.random()*1000
+tailSeed: Math.random()*999
 
 });
 
@@ -220,37 +226,25 @@ const questions = [
 
 {
 q:"¿Qué hormona provoca la ovulación?",
-a:["FSH","LH","Progesterona","Estrógeno"],
-c:1
+a:["LH","FSH","Progesterona","Estrógeno"],
+c:0
 },
 
 {
 q:"¿Qué hormona domina la fase lútea?",
-a:["Progesterona","LH","FSH","Insulina"],
+a:["Progesterona","FSH","LH","Estrógeno"],
 c:0
 },
 
 {
-q:"¿Qué órgano libera GnRH?",
-a:["Hipotálamo","Útero","Ovario","Hipófisis"],
+q:"¿Qué órgano produce GnRH?",
+a:["Hipotálamo","Ovario","Hipófisis","Útero"],
 c:0
 },
 
 {
-q:"¿Qué hormona estimula los folículos?",
+q:"¿Qué hormona estimula el folículo?",
 a:["FSH","LH","Progesterona","Cortisol"],
-c:0
-},
-
-{
-q:"¿Qué hormona aumenta antes de ovular?",
-a:["LH","Cortisol","Insulina","Adrenalina"],
-c:0
-},
-
-{
-q:"¿Qué hormona mantiene el endometrio?",
-a:["Progesterona","FSH","LH","GH"],
 c:0
 },
 
@@ -286,10 +280,10 @@ keys[e.key] = false;
 });
 
 /* =========================================
-   COLLISION
+   COLLISIONS
 ========================================= */
 
-function wallAtPixel(x,y){
+function isWall(x,y){
 
 const col = Math.floor(x / TILE);
 const row = Math.floor(y / TILE);
@@ -305,13 +299,11 @@ return true;
 
 }
 
-const cell = map[row][col];
-
-return cell === "#";
+return map[row][col] === "#";
 
 }
 
-function circleWallCollision(x,y,r){
+function canMove(x,y,r){
 
 const points = [
 
@@ -324,20 +316,20 @@ const points = [
 
 for(let p of points){
 
-if(wallAtPixel(p[0],p[1])){
-
-return true;
-
-}
-
-}
+if(isWall(p[0],p[1])){
 
 return false;
 
 }
 
+}
+
+return true;
+
+}
+
 /* =========================================
-   PACMAN MOVE
+   PLAYER MOVE
 ========================================= */
 
 function movePacman(dt){
@@ -381,31 +373,19 @@ pacman.x + pacman.vx * dt;
 const nextY =
 pacman.y + pacman.vy * dt;
 
-if(
-!circleWallCollision(
-nextX,
-pacman.y,
-pacman.radius
-)
-){
+if(canMove(nextX,pacman.y,pacman.radius)){
 
 pacman.x = nextX;
 
 }
 
-if(
-!circleWallCollision(
-pacman.x,
-nextY,
-pacman.radius
-)
-){
+if(canMove(pacman.x,nextY,pacman.radius)){
 
 pacman.y = nextY;
 
 }
 
-pacman.mouth += dt * 14;
+pacman.mouth += dt * 12;
 
 }
 
@@ -419,11 +399,11 @@ if(gamePaused) return;
 
 ghosts.forEach(g=>{
 
-g.dirTimer -= dt;
+g.changeDirTimer -= dt;
 
-if(g.dirTimer <= 0){
+if(g.changeDirTimer <= 0){
 
-g.dirTimer = 0.18;
+g.changeDirTimer = 0.15;
 
 const dirs = [
 
@@ -445,17 +425,7 @@ g.x + d[0]*TILE;
 const ny =
 g.y + d[1]*TILE;
 
-if(
-circleWallCollision(
-nx,
-ny,
-g.radius
-)
-){
-
-return;
-
-}
+if(!canMove(nx,ny,g.radius)) return;
 
 const dist =
 
@@ -488,25 +458,13 @@ g.x + g.vx * dt;
 const nextY =
 g.y + g.vy * dt;
 
-if(
-!circleWallCollision(
-nextX,
-g.y,
-g.radius
-)
-){
+if(canMove(nextX,g.y,g.radius)){
 
 g.x = nextX;
 
 }
 
-if(
-!circleWallCollision(
-g.x,
-nextY,
-g.radius
-)
-){
+if(canMove(g.x,nextY,g.radius)){
 
 g.y = nextY;
 
@@ -531,10 +489,7 @@ if(map[row][col] === "#"){
 const x = col*TILE;
 const y = row*TILE;
 
-ctx.fillStyle = "#18003a";
-
-ctx.shadowBlur = 12;
-ctx.shadowColor = "#ff006e";
+ctx.fillStyle = "#2b0f54";
 
 ctx.fillRect(
 x,
@@ -543,15 +498,15 @@ TILE,
 TILE
 );
 
-ctx.strokeStyle = "#ff006e";
+ctx.strokeStyle = "#ff004d";
 
 ctx.lineWidth = 2;
 
 ctx.strokeRect(
-x,
-y,
-TILE,
-TILE
+x+1,
+y+1,
+TILE-2,
+TILE-2
 );
 
 }
@@ -559,8 +514,6 @@ TILE
 }
 
 }
-
-ctx.shadowBlur = 0;
 
 }
 
@@ -570,30 +523,20 @@ ctx.shadowBlur = 0;
 
 function drawPellets(){
 
+ctx.fillStyle = "#ffd6ff";
+
 pellets.forEach(p=>{
 
 if(p.eaten) return;
 
-ctx.fillStyle = "#ff87d0";
-
-ctx.shadowBlur = 12;
-ctx.shadowColor = "#ff87d0";
-
-ctx.beginPath();
-
-ctx.arc(
-p.x,
-p.y,
-3,
-0,
-Math.PI*2
+ctx.fillRect(
+p.x-2,
+p.y-2,
+4,
+4
 );
 
-ctx.fill();
-
 });
-
-ctx.shadowBlur = 0;
 
 }
 
@@ -606,8 +549,8 @@ function drawPacman(){
 ctx.save();
 
 ctx.translate(
-pacman.x,
-pacman.y
+Math.round(pacman.x),
+Math.round(pacman.y)
 );
 
 ctx.rotate(pacman.angle);
@@ -616,12 +559,9 @@ const open =
 
 Math.abs(
 Math.sin(pacman.mouth)
-)*0.70;
+)*0.28;
 
 ctx.fillStyle = "#ffe600";
-
-ctx.shadowBlur = 18;
-ctx.shadowColor = "#ffe600";
 
 ctx.beginPath();
 
@@ -639,8 +579,6 @@ ctx.fill();
 
 ctx.restore();
 
-ctx.shadowBlur = 0;
-
 }
 
 /* =========================================
@@ -653,7 +591,10 @@ ghosts.forEach(g=>{
 
 ctx.save();
 
-ctx.translate(g.x,g.y);
+ctx.translate(
+Math.round(g.x),
+Math.round(g.y)
+);
 
 let angle = 0;
 
@@ -664,34 +605,35 @@ if(g.vy < 0) angle = -Math.PI/2;
 
 ctx.rotate(angle);
 
-ctx.beginPath();
-
-ctx.moveTo(-8,0);
-
-for(let i=0;i<16;i++){
-
-ctx.lineTo(
-
--8 - i*3,
-
-Math.sin(
-Date.now()/90 +
-i +
-g.tailSeed
-)*3
-
-);
-
-}
+/* TAIL */
 
 ctx.strokeStyle = g.color;
 
 ctx.lineWidth = 2;
 
-ctx.shadowBlur = 14;
-ctx.shadowColor = g.color;
+ctx.beginPath();
+
+ctx.moveTo(-6,0);
+
+for(let i=0;i<10;i++){
+
+ctx.lineTo(
+
+-6 - i*3,
+
+Math.sin(
+Date.now()/70 +
+i +
+g.tailSeed
+)*2
+
+);
+
+}
 
 ctx.stroke();
+
+/* HEAD */
 
 ctx.fillStyle = g.color;
 
@@ -700,8 +642,8 @@ ctx.beginPath();
 ctx.ellipse(
 0,
 0,
-10,
-6,
+8,
+5,
 0,
 0,
 Math.PI*2
@@ -709,20 +651,16 @@ Math.PI*2
 
 ctx.fill();
 
+/* EYES */
+
 ctx.fillStyle = "white";
 
-ctx.beginPath();
-
-ctx.arc(2,-2,1.2,0,Math.PI*2);
-ctx.arc(2,2,1.2,0,Math.PI*2);
-
-ctx.fill();
+ctx.fillRect(1,-2,2,2);
+ctx.fillRect(1,1,2,2);
 
 ctx.restore();
 
 });
-
-ctx.shadowBlur = 0;
 
 }
 
@@ -836,7 +774,7 @@ optionsBox.appendChild(btn);
 }
 
 /* =========================================
-   COLLISIONS
+   GHOST COLLISION
 ========================================= */
 
 function checkGhostCollision(){
@@ -858,8 +796,8 @@ lives--;
 
 livesText.innerText = lives;
 
-pacman.x = 1.5*TILE;
-pacman.y = 1.5*TILE;
+pacman.x = TILE * 1.5;
+pacman.y = TILE * 1.5;
 
 if(lives <= 0){
 
@@ -905,7 +843,6 @@ requestAnimationFrame(gameLoop);
 if(!gameStarted) return;
 
 const dt =
-
 (timestamp - lastTime) / 1000;
 
 lastTime = timestamp;
