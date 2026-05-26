@@ -105,7 +105,7 @@ y: 1.5,
 
 radius: 14,
 
-speed: 0.12,
+speed: 1.2,
 
 dirX: 0,
 dirY: 0,
@@ -380,7 +380,7 @@ pacman.y = nextY;
 
 }
 
-pacman.mouth += 0.32;
+pacman.mouth += 0.92;
 
 }
 
