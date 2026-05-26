@@ -1,346 +1,512 @@
+/* =========================================
+   GLOBAL
+========================================= */
+
 *{
-
-margin:0;
-padding:0;
-box-sizing:border-box;
-
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
 body{
 
-background:
-radial-gradient(circle,#11163a,#02030a);
+    background:
+    radial-gradient(circle at top,
+    #220022 0%,
+    #070010 45%,
+    #02030a 100%);
 
-font-family:'Press Start 2P',cursive;
+    overflow:hidden;
 
-overflow:hidden;
+    font-family:
+    "Courier New",
+    monospace;
 
-color:white;
-
-}
-
-/* GAME */
-
-#gameContainer{
-
-width:100vw;
-height:100vh;
-
-display:flex;
-justify-content:center;
-align-items:center;
+    color:white;
 
 }
 
-canvas{
+/* =========================================
+   MENU
+========================================= */
 
-background:black;
+#menuScreen{
 
-border:4px solid #ff4fd8;
+    position:fixed;
 
-border-radius:20px;
+    inset:0;
 
-box-shadow:
-0 0 20px #ff4fd8,
-0 0 50px #5b7dff;
+    display:flex;
 
-}
+    justify-content:center;
+    align-items:center;
 
-/* HUD */
-
-#hud{
-
-position:absolute;
-
-top:15px;
-left:50%;
-
-transform:translateX(-50%);
-
-display:flex;
-gap:25px;
-
-z-index:10;
+    z-index:100;
 
 }
 
-.hudBox{
+.menuBox{
 
-background:rgba(0,0,0,.7);
+    width:650px;
 
-padding:15px 20px;
+    background:#050510;
 
-border-radius:12px;
+    border:
+    4px solid #ff008c;
 
-border:2px solid #5b7dff;
+    border-radius:24px;
 
-font-size:10px;
+    padding:50px;
 
-box-shadow:
-0 0 10px #5b7dff;
+    text-align:center;
 
-}
-
-/* POWERS */
-
-#powersPanel{
-
-position:absolute;
-
-right:20px;
-top:100px;
-
-width:280px;
-
-background:rgba(0,0,0,.75);
-
-padding:20px;
-
-border-radius:20px;
-
-border:2px solid #ff4fd8;
-
-display:flex;
-flex-direction:column;
-gap:18px;
-
-box-shadow:
-0 0 20px #ff4fd8;
+    box-shadow:
+    0 0 15px #ff008c,
+    0 0 50px #ff008c;
 
 }
 
-#powersPanel h3{
+.title{
 
-text-align:center;
+    font-size:72px;
 
-font-size:14px;
+    color:#ff4dc4;
 
-margin-bottom:10px;
+    text-shadow:
+    0 0 10px #ff008c;
 
-color:#ff4fd8;
+    margin-bottom:15px;
 
-}
-
-.powerItem p{
-
-font-size:9px;
-
-margin-bottom:8px;
-
-}
-
-.bar{
-
-width:100%;
-height:14px;
-
-background:#222;
-
-border-radius:10px;
-
-overflow:hidden;
-
-}
-
-.bar div{
-
-width:0%;
-height:100%;
-
-background:
-linear-gradient(
-90deg,
-#ff4fd8,
-#5b7dff
-);
-
-}
-
-/* START SCREEN */
-
-#startScreen{
-
-position:absolute;
-
-width:100%;
-height:100%;
-
-background:
-radial-gradient(circle,#141d44,#02030a);
-
-display:flex;
-justify-content:center;
-align-items:center;
-
-z-index:100;
-
-}
-
-.startCard{
-
-width:650px;
-
-background:rgba(0,0,0,.8);
-
-padding:50px;
-
-border-radius:30px;
-
-border:3px solid #ff4fd8;
-
-text-align:center;
-
-box-shadow:
-0 0 40px #ff4fd8;
-
-}
-
-.startCard h1{
-
-font-size:30px;
-
-color:#ff4fd8;
-
-margin-bottom:25px;
+    letter-spacing:3px;
 
 }
 
 .subtitle{
 
-font-size:11px;
+    color:#b7b8ff;
 
-margin-bottom:30px;
+    font-size:28px;
 
-color:#9da7ff;
+    margin-bottom:35px;
 
 }
 
-.info{
+.menuList{
 
-display:flex;
-flex-direction:column;
-gap:18px;
+    text-align:left;
 
-margin-bottom:40px;
+    margin:30px auto;
 
-font-size:10px;
+    width:80%;
 
-line-height:1.8;
+    font-size:24px;
+
+    line-height:2;
+
+}
+
+.menuList li{
+
+    list-style:none;
 
 }
 
 #playBtn{
 
-padding:18px 45px;
+    margin-top:25px;
 
-background:#ff4fd8;
+    background:
+    linear-gradient(
+    90deg,
+    #ff008c,
+    #ff4dc4
+    );
 
-border:none;
+    border:none;
 
-border-radius:14px;
+    color:white;
 
-font-family:'Press Start 2P',cursive;
+    font-size:32px;
 
-font-size:14px;
+    font-weight:bold;
 
-color:white;
+    padding:
+    18px 60px;
 
-cursor:pointer;
+    border-radius:18px;
 
-transition:.2s;
+    cursor:pointer;
+
+    transition:0.2s;
+
+    box-shadow:
+    0 0 12px #ff008c;
 
 }
 
 #playBtn:hover{
 
-transform:scale(1.08);
+    transform:scale(1.05);
 
 }
 
-/* QUESTIONS */
+/* =========================================
+   GAME
+========================================= */
 
-#questionModal{
+#gameScreen{
 
-position:absolute;
+    display:none;
 
-width:100%;
-height:100%;
+    width:100vw;
+    height:100vh;
 
-background:rgba(0,0,0,.7);
+    padding:15px;
 
-display:flex;
-justify-content:center;
-align-items:center;
+}
 
-z-index:50;
+/* =========================================
+   TOP HUD
+========================================= */
+
+.topHUD{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:30px;
+
+    margin-bottom:15px;
+
+}
+
+.hudBox{
+
+    background:#090018;
+
+    border:
+    3px solid #ff008c;
+
+    border-radius:18px;
+
+    padding:
+    14px 30px;
+
+    min-width:230px;
+
+    text-align:center;
+
+    font-size:28px;
+
+    box-shadow:
+    0 0 10px #ff008c;
+
+}
+
+/* =========================================
+   MAIN LAYOUT
+========================================= */
+
+.mainLayout{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:flex-start;
+
+    gap:20px;
+
+}
+
+/* =========================================
+   GAME CONTAINER
+========================================= */
+
+#gameContainer{
+
+    position:relative;
+
+    background:black;
+
+    border:
+    5px solid #ff008c;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 0 25px #ff008c;
+
+}
+
+canvas{
+
+    display:block;
+
+    image-rendering:pixelated;
+
+    image-rendering:crisp-edges;
+
+    background:black;
+
+}
+
+/* =========================================
+   POWERS PANEL
+========================================= */
+
+#powersPanel{
+
+    width:330px;
+
+    background:#050510;
+
+    border:
+    4px solid #ff008c;
+
+    border-radius:22px;
+
+    padding:25px;
+
+    box-shadow:
+    0 0 20px #ff008c;
+
+}
+
+.panelTitle{
+
+    font-size:42px;
+
+    color:#ff008c;
+
+    margin-bottom:25px;
+
+    text-align:center;
+
+}
+
+.powerBlock{
+
+    margin-bottom:22px;
+
+}
+
+.powerName{
+
+    font-size:24px;
+
+    margin-bottom:8px;
+
+}
+
+.powerBarBG{
+
+    width:100%;
+    height:22px;
+
+    background:#111;
+
+    border:
+    2px solid #ff008c;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+}
+
+.powerBar{
+
+    height:100%;
+    width:0%;
+
+    background:
+    linear-gradient(
+    90deg,
+    #ff008c,
+    #ffb3e6
+    );
+
+    transition:0.2s;
+
+}
+
+/* =========================================
+   QUESTION BOX
+========================================= */
+
+#questionBox{
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+    rgba(0,0,0,0.82);
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:50;
 
 }
 
 .questionCard{
 
-width:750px;
+    width:750px;
 
-background:#0e1433;
+    background:#080014;
 
-padding:40px;
+    border:
+    4px solid #ff008c;
 
-border-radius:25px;
+    border-radius:20px;
 
-border:3px solid #ff4fd8;
+    padding:35px;
 
-box-shadow:
-0 0 30px #ff4fd8;
+    box-shadow:
+    0 0 25px #ff008c;
 
 }
 
 #questionText{
 
-font-size:13px;
+    font-size:32px;
 
-line-height:2;
+    line-height:1.5;
 
-margin-bottom:30px;
+    margin-bottom:30px;
 
-text-align:center;
-
-}
-
-.answerBtn{
-
-width:100%;
-
-padding:18px;
-
-margin:12px 0;
-
-background:#18204f;
-
-border:none;
-
-border-radius:12px;
-
-color:white;
-
-font-family:'Press Start 2P',cursive;
-
-font-size:10px;
-
-cursor:pointer;
-
-transition:.2s;
+    text-align:center;
 
 }
 
-.answerBtn:hover{
+#options{
 
-background:#ff4fd8;
+    display:grid;
 
-transform:scale(1.02);
+    grid-template-columns:
+    1fr 1fr;
+
+    gap:18px;
 
 }
 
-.hidden{
+.option{
 
-display:none;
+    background:#120020;
+
+    border:
+    3px solid #ff008c;
+
+    border-radius:14px;
+
+    padding:18px;
+
+    font-size:24px;
+
+    cursor:pointer;
+
+    transition:0.2s;
+
+    text-align:center;
+
+}
+
+.option:hover{
+
+    background:#ff008c;
+
+    transform:scale(1.03);
+
+}
+
+/* =========================================
+   WIN SCREEN
+========================================= */
+
+#winScreen{
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+    rgba(0,0,0,0.95);
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:999;
+
+}
+
+.winBox{
+
+    background:#070010;
+
+    border:
+    5px solid #00ffcc;
+
+    border-radius:25px;
+
+    padding:60px;
+
+    text-align:center;
+
+    box-shadow:
+    0 0 30px #00ffcc;
+
+}
+
+.winTitle{
+
+    font-size:82px;
+
+    color:#00ffcc;
+
+    margin-bottom:20px;
+
+}
+
+.winText{
+
+    font-size:30px;
+
+    color:white;
+
+}
+
+/* =========================================
+   RETRO EFFECT
+========================================= */
+
+body::after{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    background:
+    repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.02),
+    rgba(255,255,255,0.02) 2px,
+    transparent 2px,
+    transparent 4px
+    );
+
+    mix-blend-mode:overlay;
 
 }
