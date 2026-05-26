@@ -1,21 +1,3 @@
-
-<div id="questionBox">
-
-<div class="questionCard">
-
-<div id="questionText"></div>
-
-<div id="options"></div>
-
-</div>
-
-</div>
-
-<script src="game.js"></script>
-
-</body>
-</html>
-me pasas pls el nuevo js completo?
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
