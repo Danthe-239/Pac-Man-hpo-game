@@ -1,8 +1,12 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+/* =========================
+   CANVAS
+========================= */
+
 canvas.width = 900;
-canvas.height = 650;
+canvas.height = 640;
 
 /* =========================
    MENU
@@ -99,9 +103,9 @@ const pacman = {
 x: 1.5,
 y: 1.5,
 
-radius: 13,
+radius: 14,
 
-speed: 0.10,
+speed: 0.12,
 
 dirX: 0,
 dirY: 0,
@@ -113,21 +117,21 @@ mouth: 0
 };
 
 /* =========================
-   GHOSTS / ESPERMAS
+   GHOSTS
 ========================= */
-
-const ghosts = [];
 
 const ghostColors = [
 
-"#ff4fd8",
+"#ff006e",
 "#00e5ff",
-"#7cff00",
-"#ff9d00",
-"#ff4d4d",
-"#9d4dff"
+"#9d4edd",
+"#ffd60a",
+"#70e000",
+"#ff7b00"
 
 ];
+
+const ghosts = [];
 
 for(let i=0;i<6;i++){
 
@@ -136,16 +140,16 @@ ghosts.push({
 x: 12 + (i%3),
 y: 8 + Math.floor(i/3),
 
-radius: 10,
+radius: 11,
 
 color: ghostColors[i],
 
 dirX: 0,
 dirY: 0,
 
-speed: 0.06,
+moveCooldown: 0,
 
-moveCooldown: 0
+tailOffset: Math.random()*1000
 
 });
 
@@ -187,7 +191,7 @@ eaten:false
 createPellets();
 
 /* =========================
-   STATS
+   GAME STATS
 ========================= */
 
 let score = 0;
@@ -214,14 +218,14 @@ const questions = [
 
 {
 q:"¿Qué hormona desencadena la ovulación?",
-a:["Estrógeno","LH","FSH","Progesterona"],
+a:["FSH","LH","Estrógeno","Progesterona"],
 c:1
 },
 
 {
 q:"¿Qué hormona domina la fase lútea?",
-a:["Progesterona","FSH","LH","Estrógeno"],
-c:0
+a:["LH","Progesterona","FSH","Estrógeno"],
+c:1
 },
 
 {
@@ -229,8 +233,8 @@ q:"¿Qué significa HPO?",
 a:[
 "Hipotálamo Pituitaria Ovario",
 "Hormona Progesterona Ovulación",
-"Hipófisis Placenta Ovario",
-"Hormona Pituitaria Ovárica"
+"Hormona Pituitaria Ovárica",
+"Hipotálamo Progesterona Ovulación"
 ],
 c:0
 },
@@ -240,32 +244,33 @@ q:"¿Dónde se producen los estrógenos?",
 a:[
 "Ovarios",
 "Hígado",
-"Riñones",
-"Hipotálamo"
-],
-c:0
-},
-
-{
-q:"¿Qué hormona estimula los folículos?",
-a:["FSH","LH","Progesterona","Insulina"],
-c:0
-},
-
-{
-q:"¿Qué órgano libera GnRH?",
-a:["Hipotálamo","Ovario","Útero","Hipófisis"],
-c:0
-},
-
-{
-q:"¿Qué estructura libera el óvulo?",
-a:[
-"Folículo",
 "Hipotálamo",
-"Útero",
-"Trompa"
+"Útero"
 ],
+c:0
+},
+
+{
+q:"¿Qué hormona estimula el crecimiento folicular?",
+a:["FSH","Progesterona","LH","Cortisol"],
+c:0
+},
+
+{
+q:"¿Qué hormona aumenta antes de ovular?",
+a:["LH","Insulina","Progesterona","Cortisol"],
+c:0
+},
+
+{
+q:"¿Qué órgano produce GnRH?",
+a:["Hipotálamo","Ovario","Hipófisis","Útero"],
+c:0
+},
+
+{
+q:"¿Qué hormona mantiene el endometrio?",
+a:["Progesterona","FSH","LH","Adrenalina"],
 c:0
 }
 
@@ -375,7 +380,7 @@ pacman.y = nextY;
 
 }
 
-pacman.mouth += 0.25;
+pacman.mouth += 0.32;
 
 }
 
@@ -391,7 +396,7 @@ ghosts.forEach(g=>{
 
 g.moveCooldown++;
 
-if(g.moveCooldown < 12) return;
+if(g.moveCooldown < 8) return;
 
 g.moveCooldown = 0;
 
@@ -422,7 +427,6 @@ Math.abs(ny - pacman.y);
 if(dist < bestDist){
 
 bestDist = dist;
-
 bestMove = d;
 
 }
@@ -455,23 +459,28 @@ for(let col=0; col<cols; col++){
 
 if(map[row][col] === "#"){
 
-ctx.fillStyle = "#1e34ff";
+const x = col*TILE;
+const y = row*TILE;
 
-ctx.shadowBlur = 15;
-ctx.shadowColor = "#5fa8ff";
+ctx.fillStyle = "#240046";
+
+ctx.shadowBlur = 20;
+ctx.shadowColor = "#ff006e";
 
 ctx.fillRect(
-col*TILE,
-row*TILE,
+x,
+y,
 TILE,
 TILE
 );
 
-ctx.strokeStyle = "#8fd0ff";
+ctx.strokeStyle = "#ff006e";
+
+ctx.lineWidth = 2;
 
 ctx.strokeRect(
-col*TILE,
-row*TILE,
+x,
+y,
 TILE,
 TILE
 );
@@ -496,7 +505,10 @@ pellets.forEach(p=>{
 
 if(p.eaten) return;
 
-ctx.fillStyle = "#ff9be8";
+ctx.fillStyle = "#ff87d0";
+
+ctx.shadowBlur = 12;
+ctx.shadowColor = "#ff87d0";
 
 ctx.beginPath();
 
@@ -511,6 +523,8 @@ Math.PI*2
 ctx.fill();
 
 });
+
+ctx.shadowBlur = 0;
 
 }
 
@@ -533,7 +547,10 @@ pacman.y*TILE
 
 ctx.rotate(pacman.angle);
 
-ctx.fillStyle = "yellow";
+ctx.fillStyle = "#ffe600";
+
+ctx.shadowBlur = 20;
+ctx.shadowColor = "#ffe600";
 
 ctx.beginPath();
 
@@ -550,6 +567,8 @@ ctx.lineTo(0,0);
 ctx.fill();
 
 ctx.restore();
+
+ctx.shadowBlur = 0;
 
 }
 
@@ -577,17 +596,44 @@ if(g.dirY === -1) angle = -Math.PI/2;
 
 ctx.rotate(angle);
 
-ctx.fillStyle = g.color;
+/* TAIL */
 
-/* head */
+ctx.beginPath();
+
+ctx.moveTo(-10,0);
+
+for(let i=0;i<16;i++){
+
+ctx.lineTo(
+
+-10-(i*4),
+
+Math.sin(Date.now()/100+i+g.tailOffset)*4
+
+);
+
+}
+
+ctx.strokeStyle = g.color;
+
+ctx.lineWidth = 3;
+
+ctx.shadowBlur = 15;
+ctx.shadowColor = g.color;
+
+ctx.stroke();
+
+/* HEAD */
+
+ctx.fillStyle = g.color;
 
 ctx.beginPath();
 
 ctx.ellipse(
 0,
 0,
-11,
-7,
+12,
+8,
 0,
 0,
 Math.PI*2
@@ -595,7 +641,7 @@ Math.PI*2
 
 ctx.fill();
 
-/* eyes */
+/* EYES */
 
 ctx.fillStyle = "white";
 
@@ -606,33 +652,11 @@ ctx.arc(3,2,1.5,0,Math.PI*2);
 
 ctx.fill();
 
-/* tail */
-
-ctx.beginPath();
-
-ctx.moveTo(-8,0);
-
-for(let i=0;i<14;i++){
-
-ctx.lineTo(
-
--8-(i*4),
-
-Math.sin(Date.now()/120+i)*3
-
-);
-
-}
-
-ctx.strokeStyle = g.color;
-
-ctx.lineWidth = 3;
-
-ctx.stroke();
-
 ctx.restore();
 
 });
+
+ctx.shadowBlur = 0;
 
 }
 
@@ -744,7 +768,7 @@ optionsBox.appendChild(btn);
 }
 
 /* =========================
-   COLLISIONS
+   GHOST COLLISION
 ========================= */
 
 function checkGhostCollisions(){
