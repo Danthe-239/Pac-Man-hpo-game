@@ -5,73 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OvuPac</title>
 
-    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- MENU -->
-    <div id="menuScreen" class="menu-screen">
+    <!-- START SCREEN -->
+    <div id="startScreen">
+
         <div class="menu-box">
+
             <h1>🌸 OvuPac 🌸</h1>
-            <p>Retro hormonal arcade</p>
+
+            <p>Retro Hormonal Arcade</p>
 
             <button id="playButton">PLAY</button>
+
         </div>
+
     </div>
 
     <!-- GAME -->
-    <div id="gameContainer" class="hidden">
+    <div id="gameContainer">
 
-        <div class="hud">
-            <div class="stat">❤️ Lives: <span id="lives">3</span></div>
-            <div class="stat">⭐ Score: <span id="score">0</span></div>
-            <div class="stat">🧠 Questions: <span id="questions">0</span></div>
+        <!-- UI -->
+        <div id="ui">
+
+            <div class="stat">
+                ❤️ Lives:
+                <span id="lives">3</span>
+            </div>
+
+            <div class="stat">
+                ⭐ Score:
+                <span id="score">0</span>
+            </div>
+
+            <div class="stat">
+                🧠 Questions:
+                <span id="questions">0</span>
+            </div>
+
         </div>
 
-        <div class="game-layout">
+        <!-- CANVAS -->
+        <canvas id="gameCanvas"></canvas>
 
-            <canvas id="gameCanvas" width="960" height="640"></canvas>
+        <!-- POWERS -->
+        <div id="powers">
 
-            <div class="powers">
-                <h2>⚡ POWERS</h2>
+            <h2>⚡ POWERS</h2>
 
-                <div class="power">
-                    <span>[1] Estrogen</span>
-                    <div class="bar"><div id="bar1"></div></div>
-                </div>
+            <div class="power">
+                <span>[1] Estrogen</span>
+                <div class="bar"><div id="bar1"></div></div>
+            </div>
 
-                <div class="power">
-                    <span>[2] LH</span>
-                    <div class="bar"><div id="bar2"></div></div>
-                </div>
+            <div class="power">
+                <span>[2] LH</span>
+                <div class="bar"><div id="bar2"></div></div>
+            </div>
 
-                <div class="power">
-                    <span>[3] FSH</span>
-                    <div class="bar"><div id="bar3"></div></div>
-                </div>
+            <div class="power">
+                <span>[3] FSH</span>
+                <div class="bar"><div id="bar3"></div></div>
+            </div>
 
-                <div class="power">
-                    <span>[4] Progesterone</span>
-                    <div class="bar"><div id="bar4"></div></div>
-                </div>
+            <div class="power">
+                <span>[4] Progesterone</span>
+                <div class="bar"><div id="bar4"></div></div>
+            </div>
 
-                <div class="power">
-                    <span>[5] Ovulation</span>
-                    <div class="bar"><div id="bar5"></div></div>
-                </div>
+            <div class="power">
+                <span>[5] Ovulation</span>
+                <div class="bar"><div id="bar5"></div></div>
+            </div>
 
-                <div class="power">
-                    <span>[6] Follicular</span>
-                    <div class="bar"><div id="bar6"></div></div>
-                </div>
+            <div class="power">
+                <span>[6] Follicular</span>
+                <div class="bar"><div id="bar6"></div></div>
             </div>
 
         </div>
 
     </div>
 
-    <!-- JS -->
     <script src="questions.js"></script>
     <script src="game.js"></script>
 
