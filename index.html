@@ -1,1 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>OvuPac</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- MENU -->
+<div id="menuScreen">
+
+    <div class="menuBox">
+
+        <h1>🌸 OvuPac 🌸</h1>
+
+        <p>Retro Hormonal Arcade</p>
+
+        <button id="playBtn">
+            PLAY
+        </button>
+
+    </div>
+
+</div>
+
+<!-- GAME -->
+<div id="gameScreen" class="hidden">
+
+    <div class="topUI">
+
+        <div class="uiBox">
+            ❤️ Lives: <span id="lives">3</span>
+        </div>
+
+        <div class="uiBox">
+            ⭐ Score: <span id="score">0</span>
+        </div>
+
+    </div>
+
+    <div class="gameContainer">
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="powers">
+
+            <h2>⚡ POWERS</h2>
+
+            <div class="power">
+                <p>[1] Estrogen</p>
+                <div class="bar"><div id="bar1"></div></div>
+            </div>
+
+            <div class="power">
+                <p>[2] LH</p>
+                <div class="bar"><div id="bar2"></div></div>
+            </div>
+
+            <div class="power">
+                <p>[3] FSH</p>
+                <div class="bar"><div id="bar3"></div></div>
+            </div>
+
+            <div class="power">
+                <p>[4] Progesterone</p>
+                <div class="bar"><div id="bar4"></div></div>
+            </div>
+
+            <div class="power">
+                <p>[5] Ovulation</p>
+                <div class="bar"><div id="bar5"></div></div>
+            </div>
+
+            <div class="power">
+                <p>[6] Follicular</p>
+                <div class="bar"><div id="bar6"></div></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="game.js"></script>
+
+</body>
+</html>
