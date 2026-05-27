@@ -7,119 +7,91 @@
 <title>OvuPac</title>
 
 <link rel="stylesheet" href="style.css">
-
 </head>
+
 <body>
 
-<!-- ================= START SCREEN ================= -->
+<!-- MENU -->
+<div id="menuScreen" class="menu-screen">
+    <div class="menu-box">
+        <h1 class="title">🌸 OvuPac 🌸</h1>
 
-<div id="startScreen">
+        <p class="subtitle">
+            Retro Hormonal Arcade
+        </p>
 
-    <div id="startCard">
-
-        <h1>🌸 OvuPac 🌸</h1>
-
-        <h2>Ciclo Menstrual & HPO Axis</h2>
-
-        <div id="features">
-
-            <p>🧠 Answer biology questions</p>
-            <p>⚡ Unlock hormone powers</p>
-            <p>🧬 Escape sperm ghosts</p>
-            <p>🏆 Retro arcade survival</p>
-
-        </div>
-
-        <button id="startBtn">
+        <button id="playBtn" class="play-btn">
             PLAY
         </button>
-
     </div>
-
 </div>
 
-<!-- ================= GAME ================= -->
+<!-- GAME -->
+<div id="gameScreen" class="hidden">
 
-<div id="gameUI" class="hidden">
+    <div class="top-ui">
 
-    <!-- HUD -->
-
-    <div id="topHUD">
-
-        <div class="hudBox">
-            ❤️ Lives:
-            <span id="lives">3</span>
+        <div class="ui-box">
+            ❤️ Lives: <span id="lives">3</span>
         </div>
 
-        <div class="hudBox">
-            ⭐ Score:
-            <span id="score">0</span>
+        <div class="ui-box">
+            ⭐ Score: <span id="score">0</span>
         </div>
 
-        <div class="hudBox">
-            🧠 Questions:
-            <span id="questions">0</span>
+        <div class="ui-box">
+            🧠 Questions: <span id="questionsAnswered">0</span>
         </div>
 
     </div>
 
-    <!-- MAIN -->
+    <div class="game-layout">
 
-    <div id="mainContainer">
+        <canvas id="gameCanvas" width="960" height="640"></canvas>
 
-        <!-- GAME -->
-
-        <div id="gameContainer">
-
-            <canvas id="gameCanvas"></canvas>
-
-        </div>
-
-        <!-- POWERS -->
-
-        <div id="powersPanel">
+        <div class="powers-panel">
 
             <h2>⚡ POWERS</h2>
 
-            <div class="powerCard">
-                <div class="powerTitle">[1] Estrogen Surge</div>
+            <div class="power">
+                <span>[1] Estrogen</span>
                 <div class="bar">
-                    <div class="fill" id="power1"></div>
+                    <div id="power1" class="fill"></div>
                 </div>
             </div>
 
-            <div class="powerCard">
-                <div class="powerTitle">[2] LH Rush</div>
+            <div class="power">
+                <span>[2] LH</span>
                 <div class="bar">
-                    <div class="fill" id="power2"></div>
+                    <div id="power2" class="fill"></div>
                 </div>
             </div>
 
-            <div class="powerCard">
-                <div class="powerTitle">[3] FSH Shield</div>
+            <div class="power">
+                <span>[3] FSH</span>
                 <div class="bar">
-                    <div class="fill" id="power3"></div>
+                    <div id="power3" class="fill"></div>
                 </div>
             </div>
 
-            <div class="powerCard">
-                <div class="powerTitle">[4] Progesterone Freeze</div>
+            <div class="power">
+                <span>[4] Progesterone</span>
                 <div class="bar">
-                    <div class="fill" id="power4"></div>
+                    <div id="power4" class="fill"></div>
                 </div>
             </div>
 
-            <div class="powerCard">
-                <div class="powerTitle">[5] Ovulation Blast</div>
+            <div class="power">
+                <span>[5] Ovulation</span>
                 <div class="bar">
-                    <div class="fill" id="power5"></div>
+                    <div id="power5" class="fill"></div>
                 </div>
             </div>
 
-            <div class="powerCard">
-                <div class="powerTitle">[6] Follicular Heal</div>
+            <div class="power">
+                <span>[6] Follicular</span>
                 <div class="bar">
-                    <div class="fill" id="power6"></div>
+                    <div id="power6" class="fill"></div>
                 </div>
             </div>
 
@@ -129,25 +101,16 @@
 
 </div>
 
-<!-- ================= QUESTION MODAL ================= -->
+<!-- QUESTION BOX -->
+<div id="questionBox" class="question-box hidden">
 
-<div id="questionModal" class="hidden">
+    <h2 id="questionText"></h2>
 
-    <div id="questionBox">
-
-        <h2 id="questionText">
-            Question here
-        </h2>
-
-        <div id="answers">
-
-            <button class="answerBtn" data-answer="0"></button>
-            <button class="answerBtn" data-answer="1"></button>
-            <button class="answerBtn" data-answer="2"></button>
-            <button class="answerBtn" data-answer="3"></button>
-
-        </div>
-
+    <div class="answers">
+        <button class="answer-btn" onclick="answerQuestion(0)" id="a0"></button>
+        <button class="answer-btn" onclick="answerQuestion(1)" id="a1"></button>
+        <button class="answer-btn" onclick="answerQuestion(2)" id="a2"></button>
+        <button class="answer-btn" onclick="answerQuestion(3)" id="a3"></button>
     </div>
 
 </div>
