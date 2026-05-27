@@ -1,162 +1,103 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
 body{
+    margin:0;
     background:
-    radial-gradient(circle at center,
-    #240046 0%,
-    #0a0016 100%);
-
+        radial-gradient(circle at center,#2b0030 0%,#090014 100%);
     color:white;
-
     font-family:Courier New;
-
     overflow:hidden;
 }
 
-/* MENU */
+.hidden{
+    display:none;
+}
 
-#menuScreen{
-    width:100vw;
-    height:100vh;
-
+.menu-screen{
+    position:fixed;
+    inset:0;
     display:flex;
     justify-content:center;
     align-items:center;
 }
 
-.menuBox{
-    width:500px;
-
+.menu-box{
+    width:420px;
     padding:50px;
-
-    border-radius:20px;
-
-    background:#0b0018;
-
-    border:3px solid #ff00aa;
-
+    border:4px solid #ff00a6;
+    border-radius:30px;
     text-align:center;
-
-    box-shadow:
-    0 0 20px #ff00aa,
-    0 0 60px #ff00aa;
+    background:#090014;
+    box-shadow:0 0 30px #ff00a6;
 }
 
-.menuBox h1{
-    font-size:60px;
-    margin-bottom:20px;
-
-    color:#ff5fd2;
+.menu-box h1{
+    font-size:58px;
+    color:#ff66c4;
 }
 
-.menuBox p{
-    font-size:28px;
-    margin-bottom:40px;
+.menu-box p{
+    color:#ffc8ec;
+    margin-bottom:30px;
 }
 
-#playBtn{
-    padding:18px 60px;
-
-    border:none;
-
-    border-radius:12px;
-
-    background:#ff00aa;
-
-    color:white;
-
-    font-size:28px;
-
-    cursor:pointer;
-
-    transition:0.2s;
-}
-
-#playBtn:hover{
-    transform:scale(1.1);
-
-    box-shadow:
-    0 0 20px #ff00aa;
-}
-
-/* GAME */
-
-.hidden{
-    display:none !important;
-}
-
-#gameScreen{
-    width:100vw;
-    height:100vh;
-
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-
-    padding-top:20px;
-}
-
-.topUI{
-    display:flex;
-    gap:20px;
-
-    margin-bottom:20px;
-}
-
-.uiBox{
-    padding:15px 30px;
-
-    border-radius:15px;
-
-    background:#140022;
-
-    border:2px solid #ff00aa;
-
-    box-shadow:
-    0 0 12px #ff00aa;
-
+#playButton{
+    padding:18px 50px;
     font-size:24px;
+    border:none;
+    border-radius:14px;
+    background:#ff00a6;
+    color:white;
+    cursor:pointer;
+    box-shadow:0 0 15px #ff00a6;
 }
 
-.gameContainer{
+#playButton:hover{
+    transform:scale(1.05);
+}
+
+.hud{
     display:flex;
+    justify-content:center;
+    gap:25px;
+    margin-top:20px;
+}
+
+.stat{
+    padding:16px 30px;
+    border:3px solid #ff00a6;
+    border-radius:18px;
+    background:#14001f;
+    box-shadow:0 0 15px #ff00a6;
+    font-size:28px;
+}
+
+.game-layout{
+    margin-top:20px;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
     gap:20px;
 }
 
 canvas{
+    border:5px solid #ff00a6;
+    border-radius:18px;
     background:black;
-
-    border:4px solid #ff00aa;
-
-    box-shadow:
-    0 0 20px #ff00aa;
-
-    image-rendering:pixelated;
+    box-shadow:0 0 25px #ff00a6;
 }
 
 .powers{
-    width:260px;
-
-    padding:20px;
-
-    background:#0b0018;
-
-    border:3px solid #ff00aa;
-
+    width:280px;
+    background:#0d0016;
+    border:4px solid #ff00a6;
     border-radius:20px;
-
-    box-shadow:
-    0 0 20px #ff00aa;
+    padding:20px;
+    box-shadow:0 0 20px #ff00a6;
 }
 
 .powers h2{
-    margin-bottom:25px;
-
-    color:#ff5fd2;
+    color:#ff4fb3;
+    text-align:center;
+    margin-bottom:20px;
 }
 
 .power{
@@ -164,22 +105,16 @@ canvas{
 }
 
 .bar{
-    width:100%;
-    height:18px;
-
-    background:#240046;
-
-    border-radius:10px;
-
-    overflow:hidden;
-
     margin-top:8px;
+    width:100%;
+    height:16px;
+    background:#2a002f;
+    border-radius:10px;
+    overflow:hidden;
 }
 
 .bar div{
-    width:0%;
-
     height:100%;
-
-    background:#ff00aa;
+    width:0%;
+    background:#ff00a6;
 }
