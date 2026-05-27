@@ -1,94 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>OvuPac</title>
+<title>OvuPac</title>
 
-  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+
+body{
+    margin:0;
+    background:#060010;
+    overflow:hidden;
+    font-family:Courier New;
+    color:white;
+}
+
+#gameWrapper{
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    gap:20px;
+    margin-top:20px;
+}
+
+#leftPanel{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+#hud{
+    display:flex;
+    gap:20px;
+    margin-bottom:15px;
+}
+
+.hudBox{
+    background:#120018;
+    border:3px solid #ff0080;
+    border-radius:15px;
+    padding:12px 25px;
+    font-size:18px;
+    box-shadow:0 0 15px #ff0080;
+}
+
+#game{
+    background:black;
+    border:4px solid #ff0080;
+    box-shadow:0 0 30px #ff0080;
+    image-rendering:pixelated;
+}
+
+#powers{
+    width:260px;
+    background:#0b0014;
+    border:3px solid #ff0080;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 0 25px #ff0080;
+}
+
+#powers h2{
+    color:#ff0080;
+}
+
+.power{
+    margin-bottom:20px;
+}
+
+.bar{
+    width:100%;
+    height:18px;
+    background:#220022;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.fill{
+    width:0%;
+    height:100%;
+    background:#ff0080;
+}
+
+</style>
 </head>
 
 <body>
 
-  <div class="hud">
+<div id="gameWrapper">
 
-    <div class="box">
-      ❤️ Lives:
-      <span id="lives">3</span>
-    </div>
+    <div id="leftPanel">
 
-    <div class="box">
-      ⭐ Score:
-      <span id="score">0</span>
-    </div>
+        <div id="hud">
 
-    <div class="box">
-      🧠 Questions:
-      <span id="questions">0</span>
-    </div>
+            <div class="hudBox">
+                ❤️ Lives: <span id="lives">3</span>
+            </div>
 
-  </div>
+            <div class="hudBox">
+                ⭐ Score: <span id="score">0</span>
+            </div>
 
-  <div class="game-container">
+            <div class="hudBox">
+                🧠 Questions: <span id="questions">0</span>
+            </div>
 
-    <canvas id="gameCanvas"></canvas>
-
-    <div class="powers">
-
-      <h2>⚡ POWERS</h2>
-
-      <div class="power">
-        <p>[1] Estrogen</p>
-        <div class="bar">
-          <div id="bar-estrogen" class="fill pink"></div>
         </div>
-      </div>
 
-      <div class="power">
-        <p>[2] LH</p>
-        <div class="bar">
-          <div id="bar-lh" class="fill yellow"></div>
-        </div>
-      </div>
-
-      <div class="power">
-        <p>[3] FSH</p>
-        <div class="bar">
-          <div id="bar-fsh" class="fill blue"></div>
-        </div>
-      </div>
-
-      <div class="power">
-        <p>[4] Progesterone</p>
-        <div class="bar">
-          <div id="bar-progesterone" class="fill green"></div>
-        </div>
-      </div>
-
-      <div class="power">
-        <p>[5] Ovulation</p>
-        <div class="bar">
-          <div id="bar-ovulation" class="fill orange"></div>
-        </div>
-      </div>
-
-      <div class="power">
-        <p>[6] Follicular</p>
-        <div class="bar">
-          <div id="bar-follicular" class="fill purple"></div>
-        </div>
-      </div>
+        <canvas id="game" width="960" height="640"></canvas>
 
     </div>
 
-  </div>
+    <div id="powers">
 
-  <script src="questions.js"></script>
-  <script src="game.js"></script>
+        <h2>⚡ POWERS</h2>
+
+        <div class="power">
+            [1] Estrogen
+            <div class="bar">
+                <div class="fill" id="power1"></div>
+            </div>
+        </div>
+
+        <div class="power">
+            [2] LH
+            <div class="bar">
+                <div class="fill" id="power2"></div>
+            </div>
+        </div>
+
+        <div class="power">
+            [3] FSH
+            <div class="bar">
+                <div class="fill" id="power3"></div>
+            </div>
+        </div>
+
+        <div class="power">
+            [4] Progesterone
+            <div class="bar">
+                <div class="fill" id="power4"></div>
+            </div>
+        </div>
+
+        <div class="power">
+            [5] Ovulation
+            <div class="bar">
+                <div class="fill" id="power5"></div>
+            </div>
+        </div>
+
+        <div class="power">
+            [6] Follicular
+            <div class="bar">
+                <div class="fill" id="power6"></div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="questions.js"></script>
+<script src="game.js"></script>
 
 </body>
 </html>
