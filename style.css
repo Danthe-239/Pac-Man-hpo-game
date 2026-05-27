@@ -1,7 +1,3 @@
-/* =========================================
-   GLOBAL
-========================================= */
-
 *{
     margin:0;
     padding:0;
@@ -9,129 +5,84 @@
 }
 
 body{
-
     background:
-    radial-gradient(circle at top,
-    #220022 0%,
-    #070010 45%,
-    #02030a 100%);
-
-    overflow:hidden;
-
-    font-family:
-    "Courier New",
-    monospace;
+    radial-gradient(circle at center,
+    #2b0033 0%,
+    #120012 40%,
+    #050008 100%);
 
     color:white;
 
+    overflow:hidden;
+
+    font-family:"Courier New", monospace;
 }
 
-/* =========================================
-   MENU
-========================================= */
+/* ================= START ================= */
 
-#menuScreen{
-
-    position:fixed;
-
-    inset:0;
+#startScreen{
+    width:100vw;
+    height:100vh;
 
     display:flex;
-
     justify-content:center;
     align-items:center;
-
-    z-index:100;
-
 }
 
-.menuBox{
+#startCard{
 
-    width:650px;
+    width:520px;
 
-    background:#050510;
+    background:#090010;
 
-    border:
-    4px solid #ff008c;
+    border:4px solid #ff0088;
 
-    border-radius:24px;
+    border-radius:30px;
 
     padding:50px;
 
     text-align:center;
 
     box-shadow:
-    0 0 15px #ff008c,
-    0 0 50px #ff008c;
-
+    0 0 20px #ff0088,
+    0 0 60px #ff008866;
 }
 
-.title{
-
+#startCard h1{
     font-size:72px;
-
     color:#ff4dc4;
 
+    margin-bottom:20px;
+
     text-shadow:
-    0 0 10px #ff008c;
-
-    margin-bottom:15px;
-
-    letter-spacing:3px;
-
+    0 0 10px #ff4dc4,
+    0 0 30px #ff4dc4;
 }
 
-.subtitle{
-
-    color:#b7b8ff;
-
-    font-size:28px;
-
-    margin-bottom:35px;
-
+#startCard h2{
+    color:#ffb3ec;
+    margin-bottom:40px;
 }
 
-.menuList{
-
-    text-align:left;
-
-    margin:30px auto;
-
-    width:80%;
-
-    font-size:24px;
-
-    line-height:2;
-
+#features{
+    margin-bottom:40px;
 }
 
-.menuList li{
-
-    list-style:none;
-
+#features p{
+    margin:14px 0;
+    font-size:20px;
 }
 
-#playBtn{
+#startBtn{
 
-    margin-top:25px;
-
-    background:
-    linear-gradient(
-    90deg,
-    #ff008c,
-    #ff4dc4
-    );
+    background:#ff0088;
+    color:white;
 
     border:none;
 
-    color:white;
+    padding:18px 50px;
 
-    font-size:32px;
-
-    font-weight:bold;
-
-    padding:
-    18px 60px;
+    font-size:28px;
 
     border-radius:18px;
 
@@ -140,373 +91,208 @@ body{
     transition:0.2s;
 
     box-shadow:
-    0 0 12px #ff008c;
-
+    0 0 10px #ff0088,
+    0 0 30px #ff0088;
 }
 
-#playBtn:hover{
-
-    transform:scale(1.05);
-
+#startBtn:hover{
+    transform:scale(1.08);
 }
 
-/* =========================================
-   GAME
-========================================= */
+/* ================= GAME ================= */
 
-#gameScreen{
+.hidden{
+    display:none !important;
+}
 
-    display:none;
-
+#gameUI{
     width:100vw;
     height:100vh;
 
-    padding:15px;
-
+    display:flex;
+    flex-direction:column;
+    align-items:center;
 }
 
-/* =========================================
-   TOP HUD
-========================================= */
-
-.topHUD{
-
+#topHUD{
     display:flex;
+    gap:25px;
 
-    justify-content:center;
-
-    gap:30px;
-
-    margin-bottom:15px;
-
+    margin-top:15px;
 }
 
 .hudBox{
 
-    background:#090018;
+    background:#140014;
 
-    border:
-    3px solid #ff008c;
+    border:3px solid #ff0088;
 
     border-radius:18px;
 
-    padding:
-    14px 30px;
-
-    min-width:230px;
-
-    text-align:center;
+    padding:14px 30px;
 
     font-size:28px;
 
     box-shadow:
-    0 0 10px #ff008c;
-
+    0 0 10px #ff0088,
+    0 0 20px #ff008855;
 }
 
-/* =========================================
-   MAIN LAYOUT
-========================================= */
-
-.mainLayout{
+#mainContainer{
+    margin-top:20px;
 
     display:flex;
-
-    justify-content:center;
-
-    align-items:flex-start;
-
-    gap:20px;
-
+    gap:25px;
 }
-
-/* =========================================
-   GAME CONTAINER
-========================================= */
 
 #gameContainer{
 
-    position:relative;
-
-    background:black;
-
-    border:
-    5px solid #ff008c;
+    border:4px solid #ff0088;
 
     border-radius:20px;
 
     overflow:hidden;
 
     box-shadow:
-    0 0 25px #ff008c;
-
+    0 0 20px #ff0088,
+    0 0 60px #ff008855;
 }
 
-canvas{
+#gameCanvas{
 
-    display:block;
+    background:black;
 
     image-rendering:pixelated;
 
-    image-rendering:crisp-edges;
-
-    background:black;
-
+    display:block;
 }
 
-/* =========================================
-   POWERS PANEL
-========================================= */
+/* ================= POWERS ================= */
 
 #powersPanel{
 
-    width:330px;
+    width:320px;
 
-    background:#050510;
+    background:#090010;
 
-    border:
-    4px solid #ff008c;
-
-    border-radius:22px;
-
-    padding:25px;
-
-    box-shadow:
-    0 0 20px #ff008c;
-
-}
-
-.panelTitle{
-
-    font-size:42px;
-
-    color:#ff008c;
-
-    margin-bottom:25px;
-
-    text-align:center;
-
-}
-
-.powerBlock{
-
-    margin-bottom:22px;
-
-}
-
-.powerName{
-
-    font-size:24px;
-
-    margin-bottom:8px;
-
-}
-
-.powerBarBG{
-
-    width:100%;
-    height:22px;
-
-    background:#111;
-
-    border:
-    2px solid #ff008c;
-
-    border-radius:12px;
-
-    overflow:hidden;
-
-}
-
-.powerBar{
-
-    height:100%;
-    width:0%;
-
-    background:
-    linear-gradient(
-    90deg,
-    #ff008c,
-    #ffb3e6
-    );
-
-    transition:0.2s;
-
-}
-
-/* =========================================
-   QUESTION BOX
-========================================= */
-
-#questionBox{
-
-    position:absolute;
-
-    inset:0;
-
-    background:
-    rgba(0,0,0,0.82);
-
-    display:none;
-
-    justify-content:center;
-    align-items:center;
-
-    z-index:50;
-
-}
-
-.questionCard{
-
-    width:750px;
-
-    background:#080014;
-
-    border:
-    4px solid #ff008c;
+    border:4px solid #ff0088;
 
     border-radius:20px;
 
-    padding:35px;
+    padding:20px;
 
     box-shadow:
-    0 0 25px #ff008c;
-
+    0 0 20px #ff008855;
 }
 
-#questionText{
+#powersPanel h2{
 
-    font-size:32px;
+    font-size:42px;
 
-    line-height:1.5;
+    color:#ff0088;
 
-    margin-bottom:30px;
-
-    text-align:center;
-
+    margin-bottom:20px;
 }
 
-#options{
-
-    display:grid;
-
-    grid-template-columns:
-    1fr 1fr;
-
-    gap:18px;
-
+.powerCard{
+    margin-bottom:22px;
 }
 
-.option{
+.powerTitle{
+    margin-bottom:10px;
+    font-size:20px;
+}
 
-    background:#120020;
+.bar{
 
-    border:
-    3px solid #ff008c;
+    width:100%;
+    height:20px;
 
-    border-radius:14px;
+    background:#250025;
 
-    padding:18px;
+    border-radius:10px;
 
-    font-size:24px;
+    overflow:hidden;
+}
 
-    cursor:pointer;
+.fill{
+
+    width:0%;
+
+    height:100%;
+
+    background:
+    linear-gradient(90deg,
+    #ff0088,
+    #ff4dc4);
 
     transition:0.2s;
-
-    text-align:center;
-
 }
 
-.option:hover{
+/* ================= QUESTIONS ================= */
 
-    background:#ff008c;
-
-    transform:scale(1.03);
-
-}
-
-/* =========================================
-   WIN SCREEN
-========================================= */
-
-#winScreen{
+#questionModal{
 
     position:fixed;
 
     inset:0;
 
-    background:
-    rgba(0,0,0,0.95);
+    background:#000000cc;
 
-    display:none;
-
+    display:flex;
     justify-content:center;
     align-items:center;
 
     z-index:999;
-
 }
 
-.winBox{
+#questionBox{
 
-    background:#070010;
+    width:700px;
 
-    border:
-    5px solid #00ffcc;
+    background:#090010;
 
-    border-radius:25px;
+    border:4px solid #ff0088;
 
-    padding:60px;
+    border-radius:24px;
 
-    text-align:center;
+    padding:40px;
 
     box-shadow:
-    0 0 30px #00ffcc;
-
+    0 0 20px #ff0088,
+    0 0 50px #ff008855;
 }
 
-.winTitle{
+#questionText{
 
-    font-size:82px;
+    margin-bottom:30px;
 
-    color:#00ffcc;
-
-    margin-bottom:20px;
-
+    color:#ff4dc4;
 }
 
-.winText{
+.answerBtn{
 
-    font-size:30px;
+    width:100%;
+
+    margin:12px 0;
+
+    padding:16px;
+
+    background:#1a001a;
+
+    border:2px solid #ff0088;
 
     color:white;
 
+    border-radius:14px;
+
+    cursor:pointer;
+
+    font-size:18px;
+
+    transition:0.2s;
 }
 
-/* =========================================
-   RETRO EFFECT
-========================================= */
-
-body::after{
-
-    content:"";
-
-    position:fixed;
-
-    inset:0;
-
-    pointer-events:none;
-
-    background:
-    repeating-linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.02),
-    rgba(255,255,255,0.02) 2px,
-    transparent 2px,
-    transparent 4px
-    );
-
-    mix-blend-mode:overlay;
-
+.answerBtn:hover{
+    background:#ff0088;
 }
