@@ -8,119 +8,41 @@
 
 <link rel="stylesheet" href="style.css">
 
-<style>
-
-body{
-    margin:0;
-    background:
-    radial-gradient(circle at center,#3b003b 0%, #120012 45%, #05000a 100%);
-    font-family: "Courier New", monospace;
-    overflow:hidden;
-    color:white;
-}
-
-#gameWrapper{
-    width:100vw;
-    height:100vh;
-
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-}
-
-#topHUD{
-    margin-top:20px;
-
-    display:flex;
-    gap:24px;
-}
-
-.hudBox{
-    background:#130018;
-
-    border:3px solid #ff00aa;
-
-    border-radius:18px;
-
-    padding:14px 28px;
-
-    font-size:20px;
-
-    box-shadow:
-    0 0 10px #ff00aa,
-    0 0 30px #ff00aa55;
-}
-
-#mainArea{
-    margin-top:20px;
-
-    display:flex;
-    gap:20px;
-}
-
-#gameCanvas{
-    background:black;
-
-    border:4px solid #ff0088;
-
-    box-shadow:
-    0 0 20px #ff0088,
-    0 0 60px #ff008855;
-
-    image-rendering: pixelated;
-}
-
-#powers{
-    width:240px;
-
-    background:#0b0012;
-
-    border:3px solid #ff00aa;
-
-    border-radius:20px;
-
-    padding:20px;
-
-    box-shadow:
-    0 0 20px #ff00aa88;
-}
-
-#powers h2{
-    margin-top:0;
-
-    color:#ff00aa;
-
-    font-size:36px;
-}
-
-.power{
-    margin-bottom:22px;
-}
-
-.bar{
-    width:100%;
-    height:18px;
-
-    background:#2a002f;
-
-    border-radius:10px;
-
-    overflow:hidden;
-}
-
-.fill{
-    height:100%;
-    width:0%;
-
-    background:#ff00aa;
-}
-
-</style>
 </head>
-
 <body>
 
-<div id="gameWrapper">
+<!-- ================= START SCREEN ================= -->
+
+<div id="startScreen">
+
+    <div id="startCard">
+
+        <h1>🌸 OvuPac 🌸</h1>
+
+        <h2>Ciclo Menstrual & HPO Axis</h2>
+
+        <div id="features">
+
+            <p>🧠 Answer biology questions</p>
+            <p>⚡ Unlock hormone powers</p>
+            <p>🧬 Escape sperm ghosts</p>
+            <p>🏆 Retro arcade survival</p>
+
+        </div>
+
+        <button id="startBtn">
+            PLAY
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ================= GAME ================= -->
+
+<div id="gameUI" class="hidden">
+
+    <!-- HUD -->
 
     <div id="topHUD">
 
@@ -141,55 +63,88 @@ body{
 
     </div>
 
-    <div id="mainArea">
+    <!-- MAIN -->
 
-        <canvas id="gameCanvas"></canvas>
+    <div id="mainContainer">
 
-        <div id="powers">
+        <!-- GAME -->
+
+        <div id="gameContainer">
+
+            <canvas id="gameCanvas"></canvas>
+
+        </div>
+
+        <!-- POWERS -->
+
+        <div id="powersPanel">
 
             <h2>⚡ POWERS</h2>
 
-            <div class="power">
-                [1] Estrogen
+            <div class="powerCard">
+                <div class="powerTitle">[1] Estrogen Surge</div>
                 <div class="bar">
                     <div class="fill" id="power1"></div>
                 </div>
             </div>
 
-            <div class="power">
-                [2] LH
+            <div class="powerCard">
+                <div class="powerTitle">[2] LH Rush</div>
                 <div class="bar">
                     <div class="fill" id="power2"></div>
                 </div>
             </div>
 
-            <div class="power">
-                [3] FSH
+            <div class="powerCard">
+                <div class="powerTitle">[3] FSH Shield</div>
                 <div class="bar">
                     <div class="fill" id="power3"></div>
                 </div>
             </div>
 
-            <div class="power">
-                [4] Progesterone
+            <div class="powerCard">
+                <div class="powerTitle">[4] Progesterone Freeze</div>
                 <div class="bar">
                     <div class="fill" id="power4"></div>
                 </div>
             </div>
 
-            <div class="power">
-                [5] Ovulation
+            <div class="powerCard">
+                <div class="powerTitle">[5] Ovulation Blast</div>
                 <div class="bar">
                     <div class="fill" id="power5"></div>
                 </div>
             </div>
 
-            <div class="power">
-                [6] Follicular
+            <div class="powerCard">
+                <div class="powerTitle">[6] Follicular Heal</div>
                 <div class="bar">
                     <div class="fill" id="power6"></div>
                 </div>
             </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= QUESTION MODAL ================= -->
+
+<div id="questionModal" class="hidden">
+
+    <div id="questionBox">
+
+        <h2 id="questionText">
+            Question here
+        </h2>
+
+        <div id="answers">
+
+            <button class="answerBtn" data-answer="0"></button>
+            <button class="answerBtn" data-answer="1"></button>
+            <button class="answerBtn" data-answer="2"></button>
+            <button class="answerBtn" data-answer="3"></button>
 
         </div>
 
