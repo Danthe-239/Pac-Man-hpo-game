@@ -12,77 +12,107 @@
 
 body{
     margin:0;
-    background:#060010;
+    background:
+    radial-gradient(circle at center,#3b003b 0%, #120012 45%, #05000a 100%);
+    font-family: "Courier New", monospace;
     overflow:hidden;
-    font-family:Courier New;
     color:white;
 }
 
 #gameWrapper{
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    gap:20px;
-    margin-top:20px;
-}
+    width:100vw;
+    height:100vh;
 
-#leftPanel{
     display:flex;
     flex-direction:column;
     align-items:center;
 }
 
-#hud{
+#topHUD{
+    margin-top:20px;
+
     display:flex;
-    gap:20px;
-    margin-bottom:15px;
+    gap:24px;
 }
 
 .hudBox{
-    background:#120018;
-    border:3px solid #ff0080;
-    border-radius:15px;
-    padding:12px 25px;
-    font-size:18px;
-    box-shadow:0 0 15px #ff0080;
+    background:#130018;
+
+    border:3px solid #ff00aa;
+
+    border-radius:18px;
+
+    padding:14px 28px;
+
+    font-size:20px;
+
+    box-shadow:
+    0 0 10px #ff00aa,
+    0 0 30px #ff00aa55;
 }
 
-#game{
+#mainArea{
+    margin-top:20px;
+
+    display:flex;
+    gap:20px;
+}
+
+#gameCanvas{
     background:black;
-    border:4px solid #ff0080;
-    box-shadow:0 0 30px #ff0080;
-    image-rendering:pixelated;
+
+    border:4px solid #ff0088;
+
+    box-shadow:
+    0 0 20px #ff0088,
+    0 0 60px #ff008855;
+
+    image-rendering: pixelated;
 }
 
 #powers{
-    width:260px;
-    background:#0b0014;
-    border:3px solid #ff0080;
+    width:240px;
+
+    background:#0b0012;
+
+    border:3px solid #ff00aa;
+
     border-radius:20px;
+
     padding:20px;
-    box-shadow:0 0 25px #ff0080;
+
+    box-shadow:
+    0 0 20px #ff00aa88;
 }
 
 #powers h2{
-    color:#ff0080;
+    margin-top:0;
+
+    color:#ff00aa;
+
+    font-size:36px;
 }
 
 .power{
-    margin-bottom:20px;
+    margin-bottom:22px;
 }
 
 .bar{
     width:100%;
     height:18px;
-    background:#220022;
+
+    background:#2a002f;
+
     border-radius:10px;
+
     overflow:hidden;
 }
 
 .fill{
-    width:0%;
     height:100%;
-    background:#ff0080;
+    width:0%;
+
+    background:#ff00aa;
 }
 
 </style>
@@ -92,72 +122,75 @@ body{
 
 <div id="gameWrapper">
 
-    <div id="leftPanel">
+    <div id="topHUD">
 
-        <div id="hud">
-
-            <div class="hudBox">
-                ❤️ Lives: <span id="lives">3</span>
-            </div>
-
-            <div class="hudBox">
-                ⭐ Score: <span id="score">0</span>
-            </div>
-
-            <div class="hudBox">
-                🧠 Questions: <span id="questions">0</span>
-            </div>
-
+        <div class="hudBox">
+            ❤️ Lives:
+            <span id="lives">3</span>
         </div>
 
-        <canvas id="game" width="960" height="640"></canvas>
+        <div class="hudBox">
+            ⭐ Score:
+            <span id="score">0</span>
+        </div>
+
+        <div class="hudBox">
+            🧠 Questions:
+            <span id="questions">0</span>
+        </div>
 
     </div>
 
-    <div id="powers">
+    <div id="mainArea">
 
-        <h2>⚡ POWERS</h2>
+        <canvas id="gameCanvas"></canvas>
 
-        <div class="power">
-            [1] Estrogen
-            <div class="bar">
-                <div class="fill" id="power1"></div>
+        <div id="powers">
+
+            <h2>⚡ POWERS</h2>
+
+            <div class="power">
+                [1] Estrogen
+                <div class="bar">
+                    <div class="fill" id="power1"></div>
+                </div>
             </div>
-        </div>
 
-        <div class="power">
-            [2] LH
-            <div class="bar">
-                <div class="fill" id="power2"></div>
+            <div class="power">
+                [2] LH
+                <div class="bar">
+                    <div class="fill" id="power2"></div>
+                </div>
             </div>
-        </div>
 
-        <div class="power">
-            [3] FSH
-            <div class="bar">
-                <div class="fill" id="power3"></div>
+            <div class="power">
+                [3] FSH
+                <div class="bar">
+                    <div class="fill" id="power3"></div>
+                </div>
             </div>
-        </div>
 
-        <div class="power">
-            [4] Progesterone
-            <div class="bar">
-                <div class="fill" id="power4"></div>
+            <div class="power">
+                [4] Progesterone
+                <div class="bar">
+                    <div class="fill" id="power4"></div>
+                </div>
             </div>
-        </div>
 
-        <div class="power">
-            [5] Ovulation
-            <div class="bar">
-                <div class="fill" id="power5"></div>
+            <div class="power">
+                [5] Ovulation
+                <div class="bar">
+                    <div class="fill" id="power5"></div>
+                </div>
             </div>
-        </div>
 
-        <div class="power">
-            [6] Follicular
-            <div class="bar">
-                <div class="fill" id="power6"></div>
+            <div class="power">
+                [6] Follicular
+                <div class="bar">
+                    <div class="fill" id="power6"></div>
+                </div>
             </div>
+
         </div>
 
     </div>
