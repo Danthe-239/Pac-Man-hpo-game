@@ -11,106 +11,48 @@
 
 <body>
 
-<!-- MENU -->
-<div id="menuScreen" class="menu-screen">
-    <div class="menu-box">
-        <h1 class="title">🌸 OvuPac 🌸</h1>
+<div id="menu">
+    <h1>🌸 OvuPac 🌸</h1>
+    <p>Retro Hormonal Arcade</p>
 
-        <p class="subtitle">
-            Retro Hormonal Arcade
-        </p>
-
-        <button id="playBtn" class="play-btn">
-            PLAY
-        </button>
-    </div>
+    <button id="playButton">PLAY</button>
 </div>
 
-<!-- GAME -->
-<div id="gameScreen" class="hidden">
+<div id="gameUI" style="display:none;">
 
-    <div class="top-ui">
-
-        <div class="ui-box">
-            ❤️ Lives: <span id="lives">3</span>
-        </div>
-
-        <div class="ui-box">
-            ⭐ Score: <span id="score">0</span>
-        </div>
-
-        <div class="ui-box">
-            🧠 Questions: <span id="questionsAnswered">0</span>
-        </div>
-
+    <div class="topbar">
+        <div>❤️ Lives: <span id="lives">3</span></div>
+        <div>⭐ Score: <span id="score">0</span></div>
+        <div>🧠 Questions: <span id="questions">0</span></div>
     </div>
 
-    <div class="game-layout">
+    <div class="gameContainer">
 
         <canvas id="gameCanvas" width="960" height="640"></canvas>
 
-        <div class="powers-panel">
-
+        <div class="powers">
             <h2>⚡ POWERS</h2>
 
-            <div class="power">
-                <span>[1] Estrogen</span>
-                <div class="bar">
-                    <div id="power1" class="fill"></div>
-                </div>
-            </div>
+            <div>[1] Estrogen</div>
+            <div class="bar"><div id="bar1"></div></div>
 
-            <div class="power">
-                <span>[2] LH</span>
-                <div class="bar">
-                    <div id="power2" class="fill"></div>
-                </div>
-            </div>
+            <div>[2] LH</div>
+            <div class="bar"><div id="bar2"></div></div>
 
-            <div class="power">
-                <span>[3] FSH</span>
-                <div class="bar">
-                    <div id="power3" class="fill"></div>
-                </div>
-            </div>
+            <div>[3] FSH</div>
+            <div class="bar"><div id="bar3"></div></div>
 
-            <div class="power">
-                <span>[4] Progesterone</span>
-                <div class="bar">
-                    <div id="power4" class="fill"></div>
-                </div>
-            </div>
+            <div>[4] Progesterone</div>
+            <div class="bar"><div id="bar4"></div></div>
 
-            <div class="power">
-                <span>[5] Ovulation</span>
-                <div class="bar">
-                    <div id="power5" class="fill"></div>
-                </div>
-            </div>
+            <div>[5] Ovulation</div>
+            <div class="bar"><div id="bar5"></div></div>
 
-            <div class="power">
-                <span>[6] Follicular</span>
-                <div class="bar">
-                    <div id="power6" class="fill"></div>
-                </div>
-            </div>
+            <div>[6] Follicular</div>
+            <div class="bar"><div id="bar6"></div></div>
 
         </div>
 
-    </div>
-
-</div>
-
-<!-- QUESTION BOX -->
-<div id="questionBox" class="question-box hidden">
-
-    <h2 id="questionText"></h2>
-
-    <div class="answers">
-        <button class="answer-btn" onclick="answerQuestion(0)" id="a0"></button>
-        <button class="answer-btn" onclick="answerQuestion(1)" id="a1"></button>
-        <button class="answer-btn" onclick="answerQuestion(2)" id="a2"></button>
-        <button class="answer-btn" onclick="answerQuestion(3)" id="a3"></button>
     </div>
 
 </div>
@@ -120,3 +62,44 @@
 
 </body>
 </html>
+3. Verifica nombres EXACTOS
+
+MUY importante:
+
+✅ style.css
+✅ game.js
+✅ questions.js
+
+NO:
+
+❌ Style.css
+❌ GAME.JS
+❌ questions (1).js
+
+4. Sube TODO otra vez
+
+En GitHub web:
+
+Add file
+Upload files
+arrastra:
+index.html
+style.css
+game.js
+questions.js
+
+Luego:
+
+Commit changes
+5. Espera 1 minuto
+
+GitHub Pages tarda un poco.
+
+Luego entra otra vez.
+
+6. Si sigue roto
+
+Entonces el problema es que tu game.js quedó corrupto.
+
+Y ahí sí 
+te paso un game.js NUEVO limpio completo.
