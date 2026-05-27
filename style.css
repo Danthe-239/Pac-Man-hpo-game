@@ -1,15 +1,13 @@
 body{
     margin:0;
     background:
-        radial-gradient(circle at center,#2b0030 0%,#090014 100%);
-    color:white;
-    font-family:Courier New;
+    radial-gradient(circle at center,#3b0012 0%,#140014 45%,#050008 100%);
     overflow:hidden;
+    font-family:'Courier New',monospace;
+    color:white;
 }
 
-.hidden{
-    display:none;
-}
+/* MENU */
 
 .menu-screen{
     position:fixed;
@@ -17,104 +15,158 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
+    z-index:999;
+    background:rgba(0,0,0,.65);
+    backdrop-filter:blur(4px);
+}
+
+.hidden{
+    display:none !important;
 }
 
 .menu-box{
-    width:420px;
+    width:480px;
     padding:50px;
-    border:4px solid #ff00a6;
     border-radius:30px;
+    background:#120012;
+    border:4px solid #ff006e;
+    box-shadow:
+    0 0 20px #ff006e,
+    0 0 50px #ff006e;
     text-align:center;
-    background:#090014;
-    box-shadow:0 0 30px #ff00a6;
 }
 
 .menu-box h1{
-    font-size:58px;
-    color:#ff66c4;
+    font-size:64px;
+    color:#ff4da6;
+    margin:0;
+    text-shadow:
+    0 0 10px #ff4da6,
+    0 0 20px #ff006e;
 }
 
 .menu-box p{
-    color:#ffc8ec;
-    margin-bottom:30px;
+    margin-top:20px;
+    font-size:22px;
+    color:#ffd3ea;
 }
 
 #playButton{
-    padding:18px 50px;
-    font-size:24px;
+    margin-top:35px;
+    padding:18px 60px;
     border:none;
-    border-radius:14px;
-    background:#ff00a6;
+    border-radius:16px;
+    background:linear-gradient(
+    45deg,
+    #ff006e,
+    #ff4da6
+    );
     color:white;
+    font-size:28px;
     cursor:pointer;
-    box-shadow:0 0 15px #ff00a6;
+    transition:.2s;
+    box-shadow:
+    0 0 15px #ff006e;
 }
 
 #playButton:hover{
-    transform:scale(1.05);
+    transform:scale(1.06);
 }
+
+/* GAME */
+
+#gameContainer{
+    width:100vw;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+/* HUD */
 
 .hud{
     display:flex;
-    justify-content:center;
     gap:25px;
-    margin-top:20px;
+    margin-top:18px;
 }
 
 .stat{
-    padding:16px 30px;
-    border:3px solid #ff00a6;
+    min-width:220px;
+    padding:14px 25px;
+    text-align:center;
     border-radius:18px;
-    background:#14001f;
-    box-shadow:0 0 15px #ff00a6;
-    font-size:28px;
+    background:#140014;
+    border:3px solid #ff006e;
+    font-size:30px;
+    box-shadow:
+    0 0 15px #ff006e;
 }
+
+/* LAYOUT */
 
 .game-layout{
     margin-top:20px;
     display:flex;
-    justify-content:center;
+    gap:24px;
     align-items:flex-start;
-    gap:20px;
 }
 
+/* CANVAS */
+
 canvas{
-    border:5px solid #ff00a6;
-    border-radius:18px;
     background:black;
-    box-shadow:0 0 25px #ff00a6;
+    border:5px solid #ff006e;
+    border-radius:18px;
+    box-shadow:
+    0 0 20px #ff006e,
+    0 0 50px #ff006e;
+    image-rendering:pixelated;
 }
+
+/* POWERS */
 
 .powers{
     width:280px;
-    background:#0d0016;
-    border:4px solid #ff00a6;
-    border-radius:20px;
-    padding:20px;
-    box-shadow:0 0 20px #ff00a6;
+    padding:22px;
+    border-radius:22px;
+    background:#120012;
+    border:4px solid #ff006e;
+    box-shadow:
+    0 0 20px #ff006e;
 }
 
 .powers h2{
-    color:#ff4fb3;
     text-align:center;
-    margin-bottom:20px;
+    color:#ff4da6;
+    font-size:38px;
+    margin-top:0;
 }
 
 .power{
-    margin-bottom:20px;
+    margin-bottom:22px;
+}
+
+.power span{
+    font-size:22px;
 }
 
 .bar{
     margin-top:8px;
     width:100%;
-    height:16px;
-    background:#2a002f;
-    border-radius:10px;
+    height:18px;
+    border-radius:12px;
+    background:#2a002a;
     overflow:hidden;
 }
 
 .bar div{
-    height:100%;
     width:0%;
-    background:#ff00a6;
+    height:100%;
+    background:
+    linear-gradient(
+    90deg,
+    #ff006e,
+    #ff4da6
+    );
 }
