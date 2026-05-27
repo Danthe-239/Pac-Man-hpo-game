@@ -411,3 +411,18 @@ function gameLoop() {
 }
 
 gameLoop();
+// ============================
+// START BUTTON
+// ============================
+
+const playBtn = document.getElementById("playBtn");
+const menuScreen = document.getElementById("menuScreen");
+const gameScreen = document.getElementById("gameScreen");
+
+playBtn.addEventListener("click", () => {
+
+    menuScreen.classList.add("hidden");
+
+    gameScreen.classList.remove("hidden");
+
+});
