@@ -2,16 +2,29 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 const startScreen = document.getElementById("startScreen");
+const gameContainer = document.getElementById("gameContainer");
 const playButton = document.getElementById("playButton");
 
-canvas.width = 960;
-canvas.height = 640;
+canvas.width = 896;
+canvas.height = 768;
+
+ctx.imageSmoothingEnabled = false;
+
+/* =========================================
+   CONFIG
+========================================= */
 
 const TILE = 32;
 
-/* =========================
-   MAPA ESTILO PACMAN
-========================= */
+let started = false;
+
+let score = 0;
+let lives = 3;
+let questionsAnswered = 0;
+
+/* =========================================
+   MAP
+========================================= */
 
 const map = [
 "############################",
@@ -40,81 +53,62 @@ const map = [
 "############################"
 ];
 
-/* =========================
-   PLAYER
-========================= */
+/* =========================================
+   PACMAN
+========================================= */
 
 const pacman = {
-    x: 1 * TILE + TILE/2,
-    y: 1 * TILE + TILE/2,
+
+    x: TILE * 14,
+    y: TILE * 17,
+
     radius: 13,
-    speed: 2.6,
+
+    speed: 2.2,
+
     dirX: 0,
     dirY: 0,
+
     nextX: 0,
     nextY: 0,
+
     mouth: 0
 };
 
-/* =========================
+/* =========================================
    GHOSTS
-========================= */
+========================================= */
 
-const ghosts = [
-    {
-        x: 13 * TILE,
-        y: 11 * TILE,
-        color:"#ff3b6b",
-        dirX:1,
-        dirY:0
-    },
-    {
-        x: 14 * TILE,
-        y: 11 * TILE,
-        color:"#00e5ff",
-        dirX:-1,
-        dirY:0
-    },
-    {
-        x: 15 * TILE,
-        y: 11 * TILE,
-        color:"#ffea00",
-        dirX:0,
-        dirY:-1
-    },
-    {
-        x: 16 * TILE,
-        y: 11 * TILE,
-        color:"#7d5cff",
-        dirX:0,
-        dirY:1
-    }
+const ghosts = [];
+
+const ghostColors = [
+    "#ff4d6d",
+    "#00e5ff",
+    "#ffea00",
+    "#8a2be2"
 ];
 
-/* =========================
-   GAME STATE
-========================= */
+for(let i=0;i<4;i++){
 
-let score = 0;
-let lives = 3;
-let started = false;
+    ghosts.push({
 
-/* =========================
-   START BUTTON
-========================= */
+        x: TILE * (13+i),
+        y: TILE * 11,
 
-playButton.addEventListener("click", () => {
+        radius: 13,
 
-    startScreen.classList.add("hidden");
+        dirX: 1,
+        dirY: 0,
 
-    started = true;
+        speed: 1.7,
 
-    requestAnimationFrame(gameLoop);
-});
+        color: ghostColors[i]
+    });
+}
 
-/* =========================
+/* =========================================
    INPUT
-========================= */
+========================================= */
 
 window.addEventListener("keydown",(e)=>{
 
@@ -140,9 +134,25 @@ window.addEventListener("keydown",(e)=>{
 
 });
 
-/* =========================
+/* =========================================
+   START GAME
+========================================= */
+
+playButton.addEventListener("click",()=>{
+
+    startScreen.classList.add("hidden");
+
+    gameContainer.classList.remove("hidden");
+
+    started = true;
+
+    requestAnimationFrame(gameLoop);
+
+});
+
+/* =========================================
    COLLISION
-========================= */
+========================================= */
 
 function wallAt(x,y){
 
@@ -161,68 +171,68 @@ function wallAt(x,y){
     return map[row][col] === "#";
 }
 
-/* =========================
-   MOVE PACMAN
-========================= */
+/* =========================================
+   PACMAN MOVE
+========================================= */
 
 function movePacman(){
 
     const centerX =
-    Math.floor(pacman.x / TILE) * TILE + TILE/2;
+    Math.floor(pacman.x/TILE)*TILE + TILE/2;
 
     const centerY =
-    Math.floor(pacman.y / TILE) * TILE + TILE/2;
+    Math.floor(pacman.y/TILE)*TILE + TILE/2;
 
-    const closeEnough =
-    Math.abs(pacman.x-centerX)<2 &&
-    Math.abs(pacman.y-centerY)<2;
+    const aligned =
+    Math.abs(centerX-pacman.x)<2 &&
+    Math.abs(centerY-pacman.y)<2;
 
-    if(closeEnough){
+    if(aligned){
 
         pacman.x = centerX;
         pacman.y = centerY;
 
-        const testX =
-        pacman.x + pacman.nextX * TILE;
+        const tryX =
+        pacman.x + pacman.nextX*TILE;
 
-        const testY =
-        pacman.y + pacman.nextY * TILE;
+        const tryY =
+        pacman.y + pacman.nextY*TILE;
 
-        if(!wallAt(testX,testY)){
+        if(!wallAt(tryX,tryY)){
+
             pacman.dirX = pacman.nextX;
             pacman.dirY = pacman.nextY;
         }
     }
 
-    const newX =
-    pacman.x + pacman.dirX * pacman.speed;
+    const nextX =
+    pacman.x + pacman.dirX*pacman.speed;
 
-    const newY =
-    pacman.y + pacman.dirY * pacman.speed;
+    const nextY =
+    pacman.y + pacman.dirY*pacman.speed;
 
-    if(!wallAt(newX,newY)){
-        pacman.x = newX;
-        pacman.y = newY;
+    if(!wallAt(nextX,nextY)){
+
+        pacman.x = nextX;
+        pacman.y = nextY;
     }
 
     pacman.mouth += 0.18;
 }
 
-/* =========================
-   MOVE GHOSTS
-========================= */
+/* =========================================
+   GHOST AI
+========================================= */
 
 function moveGhosts(){
 
     ghosts.forEach(g=>{
 
-        const speed = 1.8;
-
         const nextX =
-        g.x + g.dirX * speed;
+        g.x + g.dirX*g.speed;
 
         const nextY =
-        g.y + g.dirY * speed;
+        g.y + g.dirY*g.speed;
 
         if(wallAt(nextX,nextY)){
 
@@ -242,14 +252,31 @@ function moveGhosts(){
                 g.y + d[1]*TILE;
 
                 return !wallAt(tx,ty);
+
             });
 
-            const pick =
-            valid[Math.floor(Math.random()*valid.length)];
+            const best = valid.sort((a,b)=>{
 
-            if(pick){
-                g.dirX = pick[0];
-                g.dirY = pick[1];
+                const da =
+                Math.hypot(
+                    pacman.x-(g.x+a[0]*TILE),
+                    pacman.y-(g.y+a[1]*TILE)
+                );
+
+                const db =
+                Math.hypot(
+                    pacman.x-(g.x+b[0]*TILE),
+                    pacman.y-(g.y+b[1]*TILE)
+                );
+
+                return da-db;
+
+            });
+
+            if(best.length){
+
+                g.dirX = best[0][0];
+                g.dirY = best[0][1];
             }
 
         }else{
@@ -262,35 +289,47 @@ function moveGhosts(){
 
 }
 
-/* =========================
+/* =========================================
    DRAW MAP
-========================= */
+========================================= */
 
 function drawMap(){
 
-    for(let row=0; row<map.length; row++){
+    for(let row=0;row<map.length;row++){
 
-        for(let col=0; col<map[row].length; col++){
+        for(let col=0;col<map[row].length;col++){
 
             const tile = map[row][col];
 
             const x = col*TILE;
             const y = row*TILE;
 
-            if(tile === "#"){
+            if(tile==="#"){
 
-                ctx.fillStyle="#3b1578";
-                ctx.fillRect(x,y,TILE,TILE);
+                ctx.fillStyle="#32145f";
 
-                ctx.strokeStyle="#ff007a";
+                ctx.fillRect(
+                    x,
+                    y,
+                    TILE,
+                    TILE
+                );
+
+                ctx.strokeStyle="#ff006e";
+
                 ctx.lineWidth=3;
-                ctx.strokeRect(x,y,TILE,TILE);
 
+                ctx.strokeRect(
+                    x,
+                    y,
+                    TILE,
+                    TILE
+                );
             }
 
             if(tile==="." || tile==="o"){
 
-                ctx.fillStyle="#ffd7f5";
+                ctx.fillStyle="#ffd6ff";
 
                 const size =
                 tile==="o" ? 8 : 4;
@@ -309,15 +348,18 @@ function drawMap(){
 
 }
 
-/* =========================
+/* =========================================
    DRAW PACMAN
-========================= */
+========================================= */
 
 function drawPacman(){
 
     ctx.save();
 
-    ctx.translate(pacman.x,pacman.y);
+    ctx.translate(
+        pacman.x,
+        pacman.y
+    );
 
     let angle = 0;
 
@@ -350,19 +392,28 @@ function drawPacman(){
     ctx.restore();
 }
 
-/* =========================
+/* =========================================
    DRAW GHOSTS
-========================= */
+========================================= */
 
 function drawGhost(g){
 
-    ctx.fillStyle = g.color;
+    ctx.fillStyle=g.color;
 
     ctx.beginPath();
 
-    ctx.arc(g.x,g.y-5,12,Math.PI,0);
+    ctx.arc(
+        g.x,
+        g.y-5,
+        12,
+        Math.PI,
+        0
+    );
 
-    ctx.lineTo(g.x+12,g.y+10);
+    ctx.lineTo(
+        g.x+12,
+        g.y+10
+    );
 
     for(let i=0;i<4;i++){
 
@@ -382,25 +433,36 @@ function drawGhost(g){
     ctx.fillRect(g.x+2,g.y-5,4,4);
 }
 
-/* =========================
+/* =========================================
    UI
-========================= */
+========================================= */
 
 function updateUI(){
 
-    document.getElementById("lives").textContent=lives;
-    document.getElementById("score").textContent=score;
+    document.getElementById("score").textContent =
+    score;
+
+    document.getElementById("lives").textContent =
+    lives;
+
+    document.getElementById("questions").textContent =
+    questionsAnswered;
 }
 
-/* =========================
-   LOOP
-========================= */
+/* =========================================
+   MAIN LOOP
+========================================= */
 
 function gameLoop(){
 
     if(!started) return;
 
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
     drawMap();
 
