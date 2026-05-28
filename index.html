@@ -1,57 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OvuPac</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="style.css">
+<title>OvuPac</title>
+
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <!-- START SCREEN -->
-    <div id="startScreen">
+<!-- START SCREEN -->
+<div id="startScreen" class="menu-screen">
 
-        <div class="menu-box">
+    <div class="menu-box">
 
-            <h1>🌸 OvuPac 🌸</h1>
+        <h1>🌸 OvuPac 🌸</h1>
 
-            <p>Retro Hormonal Arcade</p>
+        <p>Retro Hormonal Arcade</p>
 
-            <button id="playButton">PLAY</button>
+        <button id="playButton">
+            PLAY
+        </button>
 
+    </div>
+
+</div>
+
+<!-- GAME -->
+<div id="gameContainer" class="hidden">
+
+    <!-- HUD -->
+    <div class="hud">
+
+        <div class="stat">
+            ❤️ Lives:
+            <span id="lives">3</span>
+        </div>
+
+        <div class="stat">
+            ⭐ Score:
+            <span id="score">0</span>
+        </div>
+
+        <div class="stat">
+            🧠 Questions:
+            <span id="questions">0</span>
         </div>
 
     </div>
 
-    <!-- GAME -->
-    <div id="gameContainer">
+    <!-- GAME LAYOUT -->
+    <div class="game-layout">
 
-        <!-- UI -->
-        <div id="ui">
-
-            <div class="stat">
-                ❤️ Lives:
-                <span id="lives">3</span>
-            </div>
-
-            <div class="stat">
-                ⭐ Score:
-                <span id="score">0</span>
-            </div>
-
-            <div class="stat">
-                🧠 Questions:
-                <span id="questions">0</span>
-            </div>
-
-        </div>
-
-        <!-- CANVAS -->
         <canvas id="gameCanvas"></canvas>
 
         <!-- POWERS -->
-        <div id="powers">
+        <div class="powers">
 
             <h2>⚡ POWERS</h2>
 
@@ -89,8 +95,10 @@
 
     </div>
 
-    <script src="questions.js"></script>
-    <script src="game.js"></script>
+</div>
+
+<script src="questions.js"></script>
+<script src="game.js"></script>
 
 </body>
 </html>
