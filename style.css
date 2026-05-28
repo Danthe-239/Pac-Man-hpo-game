@@ -170,3 +170,6 @@ canvas{
     #ff4da6
     );
 }
+.hidden{
+    display:none !important;
+}
