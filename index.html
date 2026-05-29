@@ -1,130 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OvuPac</title>
 
-    <title>OvuPac</title>
-
-    <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-    <!-- START SCREEN -->
-    <div id="startScreen">
+  <!-- MENU -->
+  <div id="startScreen">
+    <div class="menu-card">
 
-        <div class="menu-box">
+      <h1>🌸 OvuPac 🌸</h1>
+      <p>Retro hormonal arcade</p>
 
-            <h1 class="title">
-                🌸 OvuPac 🌸
-            </h1>
+      <button id="playBtn">JUGAR</button>
 
-            <p class="subtitle">
-                Arcade hormonal retro
-            </p>
+    </div>
+  </div>
 
-            <button id="playBtn">
-                JUGAR
-            </button>
+  <!-- GAME -->
+  <div id="gameContainer">
 
-        </div>
+    <div class="hud">
+
+      <div class="hud-box">
+        ❤️ Lives: <span id="lives">3</span>
+      </div>
+
+      <div class="hud-box">
+        ⭐ Score: <span id="score">0</span>
+      </div>
+
+      <div class="hud-box">
+        🧠 Questions: <span id="questions">0</span>
+      </div>
 
     </div>
 
-    <!-- GAME -->
-    <div id="gameUI" style="display:none;">
+    <div class="game-layout">
 
-        <!-- TOP -->
-        <div class="stats">
+      <canvas id="gameCanvas" width="960" height="640"></canvas>
 
-            <div class="stat-box">
-                ❤️ Lives:
-                <span id="lives">3</span>
-            </div>
+      <div class="powers">
 
-            <div class="stat-box">
-                ⭐ Score:
-                <span id="score">0</span>
-            </div>
+        <h2>⚡ POWERS</h2>
 
-            <div class="stat-box">
-                🧠 Questions:
-                <span id="questions">0</span>
-            </div>
-
+        <div class="power">
+          <span>Estrogen</span>
+          <div class="bar"><div id="bar1"></div></div>
         </div>
 
-        <!-- MAIN -->
-        <div class="game-layout">
-
-            <!-- CANVAS -->
-            <div class="game-container">
-
-                <canvas id="gameCanvas"
-                    width="1100"
-                    height="720">
-                </canvas>
-
-            </div>
-
-            <!-- POWERS -->
-            <div class="powers-panel">
-
-                <h2>⚡ POWERS</h2>
-
-                <div class="power">
-                    <span>[1] Estrogen</span>
-                    <div class="bar"><div id="bar1"></div></div>
-                </div>
-
-                <div class="power">
-                    <span>[2] LH</span>
-                    <div class="bar"><div id="bar2"></div></div>
-                </div>
-
-                <div class="power">
-                    <span>[3] FSH</span>
-                    <div class="bar"><div id="bar3"></div></div>
-                </div>
-
-                <div class="power">
-                    <span>[4] Progesterone</span>
-                    <div class="bar"><div id="bar4"></div></div>
-                </div>
-
-                <div class="power">
-                    <span>[5] Ovulation</span>
-                    <div class="bar"><div id="bar5"></div></div>
-                </div>
-
-                <div class="power">
-                    <span>[6] Follicular</span>
-                    <div class="bar"><div id="bar6"></div></div>
-                </div>
-
-            </div>
-
+        <div class="power">
+          <span>LH</span>
+          <div class="bar"><div id="bar2"></div></div>
         </div>
+
+        <div class="power">
+          <span>FSH</span>
+          <div class="bar"><div id="bar3"></div></div>
+        </div>
+
+        <div class="power">
+          <span>Progesterone</span>
+          <div class="bar"><div id="bar4"></div></div>
+        </div>
+
+      </div>
 
     </div>
 
-    <!-- QUESTION MODAL -->
-    <div id="questionModal" class="hidden">
+  </div>
 
-        <div class="question-box">
+  <!-- QUESTION MODAL -->
+  <div id="questionModal">
 
-            <h2 id="questionText"></h2>
+    <div class="question-box">
 
-            <div id="answers"></div>
+      <h2 id="questionText"></h2>
 
-        </div>
+      <div id="answers"></div>
 
     </div>
 
-    <!-- IMPORTANT -->
-    <script src="questions.js" defer></script>
-    <script src="game.js" defer></script>
+  </div>
+
+  <script src="game.js"></script>
 
 </body>
 </html>
