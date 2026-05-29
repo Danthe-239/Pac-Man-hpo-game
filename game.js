@@ -64,9 +64,9 @@ const pacman = {
     x: TILE * 1.5,
     y: TILE * 1.5,
 
-    radius: 15,
+    radius: 13,
 
-    speed: 2.2,
+    speed: 5.5,
 
     dx: 0,
     dy: 0,
@@ -76,7 +76,7 @@ const pacman = {
 
     angle: 0,
 
-    mouth: 0.2,
+    mouth: 0.5,
     mouthSpeed: 0.04
 
 };
@@ -94,7 +94,7 @@ const ghosts = [
     dx: 1,
     dy: 0,
 
-    speed: 1.4,
+    speed: 2.2,
 
     color: "#ff4fd8"
 },
@@ -106,7 +106,7 @@ const ghosts = [
     dx: -1,
     dy: 0,
 
-    speed: 1.4,
+    speed: 2.2,
 
     color: "#38e1ff"
 }
