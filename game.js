@@ -52,7 +52,7 @@ const pacman = {
     x: TILE * 1.5,
     y: TILE * 1.5,
     size: 18,
-    speed: 2.2,
+    speed: 0.9,
     dx: 0,
     dy: 0,
     nextDx: 0,
