@@ -1,91 +1,188 @@
-// ===============================
-// 🌸 OvuPac - Retro Hormonal Arcade
-// FIXED FULL VERSION
-// ===============================
+// ==========================================
+// 🌸 OVUPAC - RETRO HORMONAL ARCADE
+// FULL CLEAN VERSION
+// ==========================================
+
+// =====================
+// CANVAS
+// =====================
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = 1100;
-canvas.height = 700;
-
-// ===============================
-// GAME STATE
-// ===============================
-
-let score = 0;
-let lives = 3;
-let questions = 0;
+// =====================
+// HUD
+// =====================
 
 const scoreEl = document.getElementById("score");
 const livesEl = document.getElementById("lives");
 const questionsEl = document.getElementById("questions");
 
-// ===============================
-// MAP
-// 0 = pellet
-// 1 = wall
-// 2 = empty
-// ===============================
+// =====================
+// GAME STATE
+// =====================
 
-const map = [
-"1111111111111111111111111",
-"1000000000000000000000001",
-"1011110111110111110111101",
-"1000000000000000000000001",
-"1011110111110111110111101",
-"1000000000000000000000001",
-"1011110111112111110111101",
-"1000000000200000000000001",
-"1011110111110111110111101",
-"1000000000000000000000001",
-"1111111111111111111111111"
+let gameStarted = false;
+
+let score = 0;
+let lives = 3;
+let questionsSolved = 0;
+
+let pelletsEaten = 0;
+
+let gamePaused = false;
+
+// =====================
+// MAP
+// 1 = wall
+// 0 = pellet
+// 2 = empty
+// =====================
+
+const TILE = 40;
+
+let map = [
+"111111111111111111111111111",
+"100000000000100000000000001",
+"101111011110101111011111101",
+"100000010000000000010000001",
+"101111010111111110010111101",
+"100000000000100000000000001",
+"101111011110101111011111101",
+"100000010000000000010000001",
+"101111010111111110010111101",
+"100000000000000000000000001",
+"111111111111111111111111111"
 ];
 
-const TILE = 44;
-
-// ===============================
+// =====================
 // PLAYER
-// ===============================
+// =====================
 
 const pacman = {
+
     x: TILE * 1.5,
     y: TILE * 1.5,
-    size: 18,
-    speed: 0.9,
+
+    radius: 15,
+
+    speed: 2.2,
+
     dx: 0,
     dy: 0,
+
     nextDx: 0,
     nextDy: 0,
+
+    angle: 0,
+
     mouth: 0.2,
-    mouthDir: 0.02,
-    angle: 0
+    mouthSpeed: 0.04
+
 };
 
-// ===============================
-// GHOSTS (RETRO STYLE)
-// ===============================
+// =====================
+// SPERM GHOSTS
+// =====================
 
 const ghosts = [
+
 {
-    x: TILE * 12,
+    x: TILE * 13,
     y: TILE * 5,
-    color: "#ff4fd8",
-    dx: 1.2,
-    dy: 0
+
+    dx: 1,
+    dy: 0,
+
+    speed: 1.4,
+
+    color: "#ff4fd8"
 },
+
 {
     x: TILE * 15,
-    y: TILE * 5,
-    color: "#38e1ff",
-    dx: -1.2,
-    dy: 0
+    y: TILE * 7,
+
+    dx: -1,
+    dy: 0,
+
+    speed: 1.4,
+
+    color: "#38e1ff"
 }
+
 ];
 
-// ===============================
+// =====================
+// QUESTIONS
+// =====================
+
+const questionBox = document.getElementById("questionBox");
+const questionText = document.getElementById("questionText");
+
+const answerButtons = [
+document.getElementById("answer1"),
+document.getElementById("answer2"),
+document.getElementById("answer3")
+];
+
+const questions = [
+
+{
+q:"Which hormone triggers ovulation?",
+a:["LH","FSH","Progesterone"],
+c:0
+},
+
+{
+q:"What hormone prepares the uterus?",
+a:["Progesterone","Insulin","TSH"],
+c:0
+},
+
+{
+q:"What does HPO stand for?",
+a:[
+"Hypothalamic Pituitary Ovarian",
+"Human Pelvic Ovary",
+"Hormonal Pregnancy Organ"
+],
+c:0
+},
+
+{
+q:"Which phase happens after ovulation?",
+a:[
+"Luteal phase",
+"Follicular phase",
+"Menstrual phase"
+],
+c:0
+}
+
+];
+
+// =====================
+// START GAME
+// =====================
+
+document
+.getElementById("playButton")
+.addEventListener("click", () => {
+
+    document
+    .getElementById("menuScreen")
+    .style.display = "none";
+
+    gameStarted = true;
+
+    gameLoop();
+
+});
+
+// =====================
 // INPUT
-// ===============================
+// =====================
 
 document.addEventListener("keydown", e => {
 
@@ -111,23 +208,23 @@ document.addEventListener("keydown", e => {
 
 });
 
-// ===============================
-// COLLISION
-// ===============================
+// =====================
+// WALL COLLISION
+// =====================
 
 function isWall(x, y) {
 
-    const row = Math.floor(y / TILE);
     const col = Math.floor(x / TILE);
+    const row = Math.floor(y / TILE);
 
     if (!map[row]) return true;
 
     return map[row][col] === "1";
 }
 
-// ===============================
-// MOVE PLAYER
-// ===============================
+// =====================
+// MOVE PACMAN
+// =====================
 
 function movePacman() {
 
@@ -135,181 +232,51 @@ function movePacman() {
     const testY = pacman.y + pacman.nextDy;
 
     if (
-        !isWall(testX - pacman.size, testY - pacman.size) &&
-        !isWall(testX + pacman.size, testY - pacman.size) &&
-        !isWall(testX - pacman.size, testY + pacman.size) &&
-        !isWall(testX + pacman.size, testY + pacman.size)
+        !isWall(testX - pacman.radius, testY - pacman.radius) &&
+        !isWall(testX + pacman.radius, testY - pacman.radius) &&
+        !isWall(testX - pacman.radius, testY + pacman.radius) &&
+        !isWall(testX + pacman.radius, testY + pacman.radius)
     ) {
+
         pacman.dx = pacman.nextDx;
         pacman.dy = pacman.nextDy;
+
     }
 
     const futureX = pacman.x + pacman.dx;
     const futureY = pacman.y + pacman.dy;
 
     if (
-        !isWall(futureX - pacman.size, futureY - pacman.size) &&
-        !isWall(futureX + pacman.size, futureY - pacman.size) &&
-        !isWall(futureX - pacman.size, futureY + pacman.size) &&
-        !isWall(futureX + pacman.size, futureY + pacman.size)
+        !isWall(futureX - pacman.radius, futureY - pacman.radius) &&
+        !isWall(futureX + pacman.radius, futureY - pacman.radius) &&
+        !isWall(futureX - pacman.radius, futureY + pacman.radius) &&
+        !isWall(futureX + pacman.radius, futureY + pacman.radius)
     ) {
+
         pacman.x = futureX;
         pacman.y = futureY;
+
     }
 
-    // Animation
+    // mouth animation
 
-    pacman.mouth += pacman.mouthDir;
+    pacman.mouth += pacman.mouthSpeed;
 
     if (pacman.mouth > 0.45 || pacman.mouth < 0.05) {
-        pacman.mouthDir *= -1;
+        pacman.mouthSpeed *= -1;
     }
 
-    // Direction
+    // angle
 
     if (pacman.dx > 0) pacman.angle = 0;
     if (pacman.dx < 0) pacman.angle = Math.PI;
     if (pacman.dy > 0) pacman.angle = Math.PI / 2;
     if (pacman.dy < 0) pacman.angle = -Math.PI / 2;
-
 }
 
-// ===============================
-// DRAW PACMAN
-// ===============================
-
-function drawPacman() {
-
-    ctx.save();
-
-    ctx.translate(pacman.x, pacman.y);
-    ctx.rotate(pacman.angle);
-
-    ctx.beginPath();
-
-    ctx.moveTo(0, 0);
-
-    ctx.arc(
-        0,
-        0,
-        pacman.size,
-        pacman.mouth,
-        Math.PI * 2 - pacman.mouth
-    );
-
-    ctx.fillStyle = "#ffe600";
-    ctx.shadowColor = "#ffe600";
-    ctx.shadowBlur = 15;
-    ctx.fill();
-
-    ctx.restore();
-}
-
-// ===============================
-// DRAW GHOSTS
-// ===============================
-
-function drawGhost(ghost) {
-
-    ctx.save();
-
-    ctx.translate(ghost.x, ghost.y);
-
-    ctx.fillStyle = ghost.color;
-    ctx.shadowColor = ghost.color;
-    ctx.shadowBlur = 15;
-
-    // head
-
-    ctx.beginPath();
-    ctx.arc(0, -8, 18, Math.PI, 0);
-    ctx.rect(-18, -8, 36, 30);
-    ctx.fill();
-
-    // bottom waves
-
-    for (let i = -18; i < 18; i += 12) {
-        ctx.beginPath();
-        ctx.arc(i + 6, 22, 6, 0, Math.PI);
-        ctx.fill();
-    }
-
-    // eyes
-
-    ctx.fillStyle = "white";
-
-    ctx.beginPath();
-    ctx.arc(-6, -5, 4, 0, Math.PI * 2);
-    ctx.arc(6, -5, 4, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.restore();
-}
-
-// ===============================
-// MOVE GHOSTS
-// ===============================
-
-function moveGhosts() {
-
-    ghosts.forEach(ghost => {
-
-        const futureX = ghost.x + ghost.dx;
-        const futureY = ghost.y + ghost.dy;
-
-        if (
-            isWall(futureX - 16, futureY - 16) ||
-            isWall(futureX + 16, futureY + 16)
-        ) {
-
-            const dirs = [
-                [1.2,0],
-                [-1.2,0],
-                [0,1.2],
-                [0,-1.2]
-            ];
-
-            const random = dirs[Math.floor(Math.random() * dirs.length)];
-
-            ghost.dx = random[0];
-            ghost.dy = random[1];
-
-        } else {
-
-            ghost.x += ghost.dx;
-            ghost.y += ghost.dy;
-
-        }
-
-        // collision with player
-
-        const dist = Math.hypot(
-            pacman.x - ghost.x,
-            pacman.y - ghost.y
-        );
-
-        if (dist < 25) {
-
-            lives--;
-
-            livesEl.innerText = lives;
-
-            pacman.x = TILE * 1.5;
-            pacman.y = TILE * 1.5;
-
-            if (lives <= 0) {
-                alert("GAME OVER");
-                location.reload();
-            }
-        }
-
-    });
-
-}
-
-// ===============================
-// PELLETS
-// ===============================
+// =====================
+// EAT PELLETS
+// =====================
 
 function eatPellets() {
 
@@ -325,30 +292,24 @@ function eatPellets() {
 
         score += 10;
 
-        scoreEl.innerText = score;
+        pelletsEaten++;
 
-        // power bars
+        updateBars();
 
-        const bars = document.querySelectorAll(".fill");
+        if (pelletsEaten >= 15) {
 
-        bars.forEach(bar => {
+            pelletsEaten = 0;
 
-            let current = parseInt(bar.style.width) || 0;
-
-            if (current < 100) {
-                current += 2;
-                bar.style.width = current + "%";
-            }
-
-        });
+            showQuestion();
+        }
 
     }
 
 }
 
-// ===============================
+// =====================
 // DRAW MAP
-// ===============================
+// =====================
 
 function drawMap() {
 
@@ -365,14 +326,24 @@ function drawMap() {
 
             if (tile === "1") {
 
-                ctx.fillStyle = "#7000c7";
-                ctx.strokeStyle = "#ff00a6";
+                ctx.fillStyle = "#7a00ff";
 
-                ctx.lineWidth = 3;
+                ctx.fillRect(
+                    x,
+                    y,
+                    TILE,
+                    TILE
+                );
 
-                ctx.fillRect(x, y, TILE, TILE);
+                ctx.strokeStyle = "#ff1493";
+                ctx.lineWidth = 2;
 
-                ctx.strokeRect(x, y, TILE, TILE);
+                ctx.strokeRect(
+                    x,
+                    y,
+                    TILE,
+                    TILE
+                );
 
             }
 
@@ -401,62 +372,267 @@ function drawMap() {
 
 }
 
-// ===============================
-// UPDATE UI
-// ===============================
+// =====================
+// DRAW PACMAN
+// =====================
 
-function updateUI() {
+function drawPacman() {
 
-    scoreEl.innerText = score;
-    livesEl.innerText = lives;
-    questionsEl.innerText = questions;
+    ctx.save();
+
+    ctx.translate(pacman.x, pacman.y);
+    ctx.rotate(pacman.angle);
+
+    ctx.beginPath();
+
+    ctx.moveTo(0, 0);
+
+    ctx.arc(
+        0,
+        0,
+        pacman.radius,
+        pacman.mouth,
+        Math.PI * 2 - pacman.mouth
+    );
+
+    ctx.fillStyle = "#ffe600";
+
+    ctx.shadowColor = "#ffe600";
+    ctx.shadowBlur = 15;
+
+    ctx.fill();
+
+    ctx.restore();
+}
+
+// =====================
+// DRAW SPERM GHOST
+// =====================
+
+function drawGhost(g) {
+
+    ctx.save();
+
+    ctx.translate(g.x, g.y);
+
+    // tail
+
+    ctx.strokeStyle = g.color;
+    ctx.lineWidth = 4;
+
+    ctx.beginPath();
+
+    ctx.moveTo(-18, 0);
+
+    ctx.quadraticCurveTo(
+        -28,
+        -10 + Math.sin(Date.now() * 0.01) * 8,
+        -40,
+        0
+    );
+
+    ctx.stroke();
+
+    // head
+
+    ctx.beginPath();
+
+    ctx.arc(0, 0, 14, 0, Math.PI * 2);
+
+    ctx.fillStyle = g.color;
+
+    ctx.shadowColor = g.color;
+    ctx.shadowBlur = 15;
+
+    ctx.fill();
+
+    ctx.restore();
+}
+
+// =====================
+// MOVE GHOSTS
+// =====================
+
+function moveGhosts() {
+
+    ghosts.forEach(g => {
+
+        // chase logic
+
+        const dx = pacman.x - g.x;
+        const dy = pacman.y - g.y;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+
+            g.dx = dx > 0 ? g.speed : -g.speed;
+            g.dy = 0;
+
+        } else {
+
+            g.dy = dy > 0 ? g.speed : -g.speed;
+            g.dx = 0;
+
+        }
+
+        const futureX = g.x + g.dx;
+        const futureY = g.y + g.dy;
+
+        if (
+            !isWall(futureX - 12, futureY - 12) &&
+            !isWall(futureX + 12, futureY + 12)
+        ) {
+
+            g.x = futureX;
+            g.y = futureY;
+
+        }
+
+        // collision
+
+        const dist = Math.hypot(
+            pacman.x - g.x,
+            pacman.y - g.y
+        );
+
+        if (dist < 22) {
+
+            lives--;
+
+            pacman.x = TILE * 1.5;
+            pacman.y = TILE * 1.5;
+
+            if (lives <= 0) {
+
+                alert("GAME OVER");
+
+                location.reload();
+            }
+
+        }
+
+    });
 
 }
 
-// ===============================
-// GAME LOOP
-// ===============================
+// =====================
+// QUESTIONS
+// =====================
 
-function gameLoop() {
+function showQuestion() {
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    gamePaused = true;
+
+    const q =
+    questions[
+        Math.floor(Math.random() * questions.length)
+    ];
+
+    questionText.innerText = q.q;
+
+    answerButtons.forEach((btn, index) => {
+
+        btn.innerText = q.a[index];
+
+        btn.onclick = () => {
+
+            if (index === q.c) {
+
+                score += 200;
+
+                questionsSolved++;
+
+            } else {
+
+                lives--;
+
+            }
+
+            questionBox.style.display = "none";
+
+            gamePaused = false;
+        };
+
+    });
+
+    questionBox.style.display = "block";
+}
+
+// =====================
+// POWER BARS
+// =====================
+
+function updateBars() {
+
+    const value = Math.min(score / 15, 100);
+
+    document.getElementById("estrogenFill")
+    .style.width = value + "%";
+
+    document.getElementById("lhFill")
+    .style.width = value * 0.8 + "%";
+
+    document.getElementById("fshFill")
+    .style.width = value * 0.6 + "%";
+
+    document.getElementById("progFill")
+    .style.width = value * 0.4 + "%";
+}
+
+// =====================
+// DRAW
+// =====================
+
+function draw() {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
     drawMap();
-
-    movePacman();
-
-    moveGhosts();
-
-    eatPellets();
 
     drawPacman();
 
     ghosts.forEach(drawGhost);
 
-    updateUI();
+}
+
+// =====================
+// UPDATE HUD
+// =====================
+
+function updateHUD() {
+
+    scoreEl.innerText = score;
+    livesEl.innerText = lives;
+    questionsEl.innerText = questionsSolved;
+
+}
+
+// =====================
+// GAME LOOP
+// =====================
+
+function gameLoop() {
+
+    if (!gameStarted) return;
+
+    if (!gamePaused) {
+
+        movePacman();
+
+        moveGhosts();
+
+        eatPellets();
+
+    }
+
+    draw();
+
+    updateHUD();
 
     requestAnimationFrame(gameLoop);
 
 }
-
-// ===============================
-// START GAME
-// ===============================
-
-function startGame() {
-
-    const menu = document.getElementById("menuScreen");
-
-    menu.style.display = "none";
-
-    gameLoop();
-
-}
-
-// ===============================
-// BUTTON
-// ===============================
-
-document
-.getElementById("playButton")
-.addEventListener("click", startGame);
