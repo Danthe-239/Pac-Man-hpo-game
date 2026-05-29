@@ -1,363 +1,462 @@
+// ===============================
+// 🌸 OvuPac - Retro Hormonal Arcade
+// FIXED FULL VERSION
+// ===============================
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const TILE = 40;
+canvas.width = 1100;
+canvas.height = 700;
 
-const map = [
-"########################",
-"#..........##..........#",
-"#.####.###.##.###.####.#",
-"#......................#",
-"#.####.#.######.#.####.#",
-"#......#....##..#......#",
-"######.#### ## ####.####",
-"#......................#",
-"#.####.##########.####.#",
-"#......................#",
-"########################"
-];
-
-const rows = map.length;
-const cols = map[0].length;
-
-const pacman = {
-  x: 1,
-  y: 1,
-  dirX: 0,
-  dirY: 0,
-  nextX: 0,
-  nextY: 0,
-  mouth: 0
-};
-
-const ghosts = [
-  {x:12,y:5,color:"#ff4fd8"},
-  {x:13,y:5,color:"#00e5ff"}
-];
+// ===============================
+// GAME STATE
+// ===============================
 
 let score = 0;
 let lives = 3;
 let questions = 0;
 
-const questionsData = [
-  {
-    q:"Which hormone triggers ovulation?",
-    a:["LH","FSH","Estrogen","Progesterone"],
-    c:0
-  },
-  {
-    q:"What hormone thickens the uterine lining?",
-    a:["Progesterone","LH","FSH","Testosterone"],
-    c:0
-  }
+const scoreEl = document.getElementById("score");
+const livesEl = document.getElementById("lives");
+const questionsEl = document.getElementById("questions");
+
+// ===============================
+// MAP
+// 0 = pellet
+// 1 = wall
+// 2 = empty
+// ===============================
+
+const map = [
+"1111111111111111111111111",
+"1000000000000000000000001",
+"1011110111110111110111101",
+"1000000000000000000000001",
+"1011110111110111110111101",
+"1000000000000000000000001",
+"1011110111112111110111101",
+"1000000000200000000000001",
+"1011110111110111110111101",
+"1000000000000000000000001",
+"1111111111111111111111111"
 ];
 
-document.getElementById("playBtn").onclick = () => {
+const TILE = 44;
 
-  document.getElementById("startScreen").style.display = "none";
+// ===============================
+// PLAYER
+// ===============================
 
-  document.getElementById("gameContainer").style.display = "block";
-
-  gameLoop();
+const pacman = {
+    x: TILE * 1.5,
+    y: TILE * 1.5,
+    size: 18,
+    speed: 2.2,
+    dx: 0,
+    dy: 0,
+    nextDx: 0,
+    nextDy: 0,
+    mouth: 0.2,
+    mouthDir: 0.02,
+    angle: 0
 };
 
-document.addEventListener("keydown",(e)=>{
+// ===============================
+// GHOSTS (RETRO STYLE)
+// ===============================
 
-  if(e.key==="ArrowUp"){
-    pacman.nextX=0;
-    pacman.nextY=-1;
-  }
+const ghosts = [
+{
+    x: TILE * 12,
+    y: TILE * 5,
+    color: "#ff4fd8",
+    dx: 1.2,
+    dy: 0
+},
+{
+    x: TILE * 15,
+    y: TILE * 5,
+    color: "#38e1ff",
+    dx: -1.2,
+    dy: 0
+}
+];
 
-  if(e.key==="ArrowDown"){
-    pacman.nextX=0;
-    pacman.nextY=1;
-  }
+// ===============================
+// INPUT
+// ===============================
 
-  if(e.key==="ArrowLeft"){
-    pacman.nextX=-1;
-    pacman.nextY=0;
-  }
+document.addEventListener("keydown", e => {
 
-  if(e.key==="ArrowRight"){
-    pacman.nextX=1;
-    pacman.nextY=0;
-  }
+    if (e.key === "ArrowUp") {
+        pacman.nextDx = 0;
+        pacman.nextDy = -pacman.speed;
+    }
+
+    if (e.key === "ArrowDown") {
+        pacman.nextDx = 0;
+        pacman.nextDy = pacman.speed;
+    }
+
+    if (e.key === "ArrowLeft") {
+        pacman.nextDx = -pacman.speed;
+        pacman.nextDy = 0;
+    }
+
+    if (e.key === "ArrowRight") {
+        pacman.nextDx = pacman.speed;
+        pacman.nextDy = 0;
+    }
 
 });
 
-function canMove(x,y){
+// ===============================
+// COLLISION
+// ===============================
 
-  return map[y][x] !== "#";
+function isWall(x, y) {
+
+    const row = Math.floor(y / TILE);
+    const col = Math.floor(x / TILE);
+
+    if (!map[row]) return true;
+
+    return map[row][col] === "1";
 }
 
-function update(){
+// ===============================
+// MOVE PLAYER
+// ===============================
 
-  const testX = pacman.x + pacman.nextX;
-  const testY = pacman.y + pacman.nextY;
+function movePacman() {
 
-  if(canMove(testX,testY)){
-    pacman.dirX = pacman.nextX;
-    pacman.dirY = pacman.nextY;
-  }
+    const testX = pacman.x + pacman.nextDx;
+    const testY = pacman.y + pacman.nextDy;
 
-  const nextX = pacman.x + pacman.dirX;
-  const nextY = pacman.y + pacman.dirY;
-
-  if(canMove(nextX,nextY)){
-    pacman.x = nextX;
-    pacman.y = nextY;
-  }
-
-  ghosts.forEach(g=>{
-
-    const dx = pacman.x - g.x;
-    const dy = pacman.y - g.y;
-
-    if(Math.abs(dx) > Math.abs(dy)){
-
-      if(dx > 0 && canMove(g.x+1,g.y)) g.x++;
-      if(dx < 0 && canMove(g.x-1,g.y)) g.x--;
-
-    }else{
-
-      if(dy > 0 && canMove(g.x,g.y+1)) g.y++;
-      if(dy < 0 && canMove(g.x,g.y-1)) g.y--;
-
+    if (
+        !isWall(testX - pacman.size, testY - pacman.size) &&
+        !isWall(testX + pacman.size, testY - pacman.size) &&
+        !isWall(testX - pacman.size, testY + pacman.size) &&
+        !isWall(testX + pacman.size, testY + pacman.size)
+    ) {
+        pacman.dx = pacman.nextDx;
+        pacman.dy = pacman.nextDy;
     }
 
-    if(g.x === pacman.x && g.y === pacman.y){
+    const futureX = pacman.x + pacman.dx;
+    const futureY = pacman.y + pacman.dy;
 
-      lives--;
-
-      document.getElementById("lives").innerText = lives;
-
-      pacman.x = 1;
-      pacman.y = 1;
-
-      if(lives <= 0){
-
-        alert("GAME OVER");
-
-        location.reload();
-      }
+    if (
+        !isWall(futureX - pacman.size, futureY - pacman.size) &&
+        !isWall(futureX + pacman.size, futureY - pacman.size) &&
+        !isWall(futureX - pacman.size, futureY + pacman.size) &&
+        !isWall(futureX + pacman.size, futureY + pacman.size)
+    ) {
+        pacman.x = futureX;
+        pacman.y = futureY;
     }
 
-  });
+    // Animation
 
-  pacman.mouth += 0.2;
+    pacman.mouth += pacman.mouthDir;
 
-  score++;
+    if (pacman.mouth > 0.45 || pacman.mouth < 0.05) {
+        pacman.mouthDir *= -1;
+    }
 
-  document.getElementById("score").innerText = score;
+    // Direction
 
-  if(score % 200 === 0){
-    triggerQuestion();
-  }
+    if (pacman.dx > 0) pacman.angle = 0;
+    if (pacman.dx < 0) pacman.angle = Math.PI;
+    if (pacman.dy > 0) pacman.angle = Math.PI / 2;
+    if (pacman.dy < 0) pacman.angle = -Math.PI / 2;
 
-  updateBars();
 }
 
-function drawMap(){
+// ===============================
+// DRAW PACMAN
+// ===============================
 
-  for(let y=0;y<rows;y++){
+function drawPacman() {
 
-    for(let x=0;x<cols;x++){
+    ctx.save();
 
-      if(map[y][x] === "#"){
+    ctx.translate(pacman.x, pacman.y);
+    ctx.rotate(pacman.angle);
 
-        ctx.fillStyle = "#6a00b8";
+    ctx.beginPath();
 
-        ctx.fillRect(
-          x*TILE,
-          y*TILE,
-          TILE,
-          TILE
-        );
+    ctx.moveTo(0, 0);
 
-        ctx.strokeStyle = "#ff0088";
-        ctx.lineWidth = 3;
+    ctx.arc(
+        0,
+        0,
+        pacman.size,
+        pacman.mouth,
+        Math.PI * 2 - pacman.mouth
+    );
 
-        ctx.strokeRect(
-          x*TILE,
-          y*TILE,
-          TILE,
-          TILE
-        );
-      }
+    ctx.fillStyle = "#ffe600";
+    ctx.shadowColor = "#ffe600";
+    ctx.shadowBlur = 15;
+    ctx.fill();
 
-      else{
+    ctx.restore();
+}
 
-        ctx.fillStyle = "white";
+// ===============================
+// DRAW GHOSTS
+// ===============================
 
+function drawGhost(ghost) {
+
+    ctx.save();
+
+    ctx.translate(ghost.x, ghost.y);
+
+    ctx.fillStyle = ghost.color;
+    ctx.shadowColor = ghost.color;
+    ctx.shadowBlur = 15;
+
+    // head
+
+    ctx.beginPath();
+    ctx.arc(0, -8, 18, Math.PI, 0);
+    ctx.rect(-18, -8, 36, 30);
+    ctx.fill();
+
+    // bottom waves
+
+    for (let i = -18; i < 18; i += 12) {
         ctx.beginPath();
+        ctx.arc(i + 6, 22, 6, 0, Math.PI);
+        ctx.fill();
+    }
 
-        ctx.arc(
-          x*TILE + TILE/2,
-          y*TILE + TILE/2,
-          3,
-          0,
-          Math.PI*2
+    // eyes
+
+    ctx.fillStyle = "white";
+
+    ctx.beginPath();
+    ctx.arc(-6, -5, 4, 0, Math.PI * 2);
+    ctx.arc(6, -5, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+}
+
+// ===============================
+// MOVE GHOSTS
+// ===============================
+
+function moveGhosts() {
+
+    ghosts.forEach(ghost => {
+
+        const futureX = ghost.x + ghost.dx;
+        const futureY = ghost.y + ghost.dy;
+
+        if (
+            isWall(futureX - 16, futureY - 16) ||
+            isWall(futureX + 16, futureY + 16)
+        ) {
+
+            const dirs = [
+                [1.2,0],
+                [-1.2,0],
+                [0,1.2],
+                [0,-1.2]
+            ];
+
+            const random = dirs[Math.floor(Math.random() * dirs.length)];
+
+            ghost.dx = random[0];
+            ghost.dy = random[1];
+
+        } else {
+
+            ghost.x += ghost.dx;
+            ghost.y += ghost.dy;
+
+        }
+
+        // collision with player
+
+        const dist = Math.hypot(
+            pacman.x - ghost.x,
+            pacman.y - ghost.y
         );
 
-        ctx.fill();
-      }
+        if (dist < 25) {
+
+            lives--;
+
+            livesEl.innerText = lives;
+
+            pacman.x = TILE * 1.5;
+            pacman.y = TILE * 1.5;
+
+            if (lives <= 0) {
+                alert("GAME OVER");
+                location.reload();
+            }
+        }
+
+    });
+
+}
+
+// ===============================
+// PELLETS
+// ===============================
+
+function eatPellets() {
+
+    const row = Math.floor(pacman.y / TILE);
+    const col = Math.floor(pacman.x / TILE);
+
+    if (map[row][col] === "0") {
+
+        map[row] =
+            map[row].substring(0, col) +
+            "2" +
+            map[row].substring(col + 1);
+
+        score += 10;
+
+        scoreEl.innerText = score;
+
+        // power bars
+
+        const bars = document.querySelectorAll(".fill");
+
+        bars.forEach(bar => {
+
+            let current = parseInt(bar.style.width) || 0;
+
+            if (current < 100) {
+                current += 2;
+                bar.style.width = current + "%";
+            }
+
+        });
 
     }
 
-  }
+}
+
+// ===============================
+// DRAW MAP
+// ===============================
+
+function drawMap() {
+
+    for (let row = 0; row < map.length; row++) {
+
+        for (let col = 0; col < map[row].length; col++) {
+
+            const tile = map[row][col];
+
+            const x = col * TILE;
+            const y = row * TILE;
+
+            // walls
+
+            if (tile === "1") {
+
+                ctx.fillStyle = "#7000c7";
+                ctx.strokeStyle = "#ff00a6";
+
+                ctx.lineWidth = 3;
+
+                ctx.fillRect(x, y, TILE, TILE);
+
+                ctx.strokeRect(x, y, TILE, TILE);
+
+            }
+
+            // pellets
+
+            if (tile === "0") {
+
+                ctx.beginPath();
+
+                ctx.arc(
+                    x + TILE / 2,
+                    y + TILE / 2,
+                    4,
+                    0,
+                    Math.PI * 2
+                );
+
+                ctx.fillStyle = "white";
+                ctx.fill();
+
+            }
+
+        }
+
+    }
 
 }
 
-function drawPacman(){
+// ===============================
+// UPDATE UI
+// ===============================
 
-  const px = pacman.x*TILE + TILE/2;
-  const py = pacman.y*TILE + TILE/2;
+function updateUI() {
 
-  const mouth = Math.abs(Math.sin(pacman.mouth))*0.5;
+    scoreEl.innerText = score;
+    livesEl.innerText = lives;
+    questionsEl.innerText = questions;
 
-  let angle = 0;
-
-  if(pacman.dirX === 1) angle = 0;
-  if(pacman.dirX === -1) angle = Math.PI;
-  if(pacman.dirY === 1) angle = Math.PI/2;
-  if(pacman.dirY === -1) angle = -Math.PI/2;
-
-  ctx.save();
-
-  ctx.translate(px,py);
-  ctx.rotate(angle);
-
-  ctx.fillStyle = "#ffe600";
-
-  ctx.beginPath();
-
-  ctx.moveTo(0,0);
-
-  ctx.arc(
-    0,
-    0,
-    18,
-    mouth,
-    Math.PI*2-mouth
-  );
-
-  ctx.fill();
-
-  ctx.restore();
 }
 
-function drawGhost(g){
+// ===============================
+// GAME LOOP
+// ===============================
 
-  const x = g.x*TILE;
-  const y = g.y*TILE;
+function gameLoop() {
 
-  ctx.fillStyle = g.color;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.beginPath();
+    drawMap();
 
-  ctx.arc(x+20,y+18,18,Math.PI,0);
+    movePacman();
 
-  ctx.lineTo(x+38,y+36);
+    moveGhosts();
 
-  ctx.lineTo(x+32,y+30);
+    eatPellets();
 
-  ctx.lineTo(x+24,y+36);
+    drawPacman();
 
-  ctx.lineTo(x+16,y+30);
+    ghosts.forEach(drawGhost);
 
-  ctx.lineTo(x+8,y+36);
+    updateUI();
 
-  ctx.lineTo(x+2,y+30);
+    requestAnimationFrame(gameLoop);
 
-  ctx.lineTo(x+2,y+36);
-
-  ctx.fill();
-
-  ctx.fillStyle="white";
-
-  ctx.beginPath();
-  ctx.arc(x+13,y+18,4,0,Math.PI*2);
-  ctx.arc(x+27,y+18,4,0,Math.PI*2);
-  ctx.fill();
 }
 
-function draw(){
+// ===============================
+// START GAME
+// ===============================
 
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+function startGame() {
 
-  drawMap();
+    const menu = document.getElementById("menuScreen");
 
-  drawPacman();
+    menu.style.display = "none";
 
-  ghosts.forEach(drawGhost);
+    gameLoop();
+
 }
 
-function gameLoop(){
+// ===============================
+// BUTTON
+// ===============================
 
-  update();
-
-  draw();
-
-  requestAnimationFrame(gameLoop);
-}
-
-function triggerQuestion(){
-
-  questions++;
-
-  document.getElementById("questions").innerText = questions;
-
-  const q = questionsData[
-    Math.floor(Math.random()*questionsData.length)
-  ];
-
-  document.getElementById("questionText").innerText = q.q;
-
-  const answers = document.getElementById("answers");
-
-  answers.innerHTML = "";
-
-  q.a.forEach((answer,index)=>{
-
-    const btn = document.createElement("button");
-
-    btn.className = "answer-btn";
-
-    btn.innerText = answer;
-
-    btn.onclick = ()=>{
-
-      if(index === q.c){
-
-        score += 500;
-
-      }else{
-
-        lives--;
-
-      }
-
-      document.getElementById("questionModal").style.display = "none";
-    };
-
-    answers.appendChild(btn);
-
-  });
-
-  document.getElementById("questionModal").style.display = "flex";
-}
-
-function updateBars(){
-
-  document.getElementById("bar1").style.width =
-  Math.min(score/20,100)+"%";
-
-  document.getElementById("bar2").style.width =
-  Math.min(score/25,100)+"%";
-
-  document.getElementById("bar3").style.width =
-  Math.min(score/30,100)+"%";
-
-  document.getElementById("bar4").style.width =
-  Math.min(score/40,100)+"%";
-}
+document
+.getElementById("playButton")
+.addEventListener("click", startGame);
