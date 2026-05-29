@@ -1,6 +1,6 @@
 // ==========================================
 // 🌸 OVUPAC - RETRO HORMONAL ARCADE
-// FULL CLEAN VERSION
+// COMPLETE FULL VERSION
 // ==========================================
 
 // =====================
@@ -33,10 +33,7 @@ let pelletsEaten = 0;
 let gamePaused = false;
 
 // =====================
-// MAP
-// 1 = wall
-// 0 = pellet
-// 2 = empty
+// TILE + MAP
 // =====================
 
 const TILE = 40;
@@ -64,9 +61,9 @@ const pacman = {
     x: TILE * 1.5,
     y: TILE * 1.5,
 
-    radius: 13,
+    radius: 15,
 
-    speed: 5.5,
+    speed: 2.1,
 
     dx: 0,
     dy: 0,
@@ -76,7 +73,7 @@ const pacman = {
 
     angle: 0,
 
-    mouth: 0.5,
+    mouth: 0.2,
     mouthSpeed: 0.04
 
 };
@@ -94,7 +91,7 @@ const ghosts = [
     dx: 1,
     dy: 0,
 
-    speed: 2.2,
+    speed: 1.3,
 
     color: "#ff4fd8"
 },
@@ -106,9 +103,21 @@ const ghosts = [
     dx: -1,
     dy: 0,
 
-    speed: 2.2,
+    speed: 1.3,
 
     color: "#38e1ff"
+},
+
+{
+    x: TILE * 20,
+    y: TILE * 3,
+
+    dx: 0,
+    dy: 1,
+
+    speed: 1.3,
+
+    color: "#ff7b00"
 }
 
 ];
@@ -157,6 +166,160 @@ a:[
 "Follicular phase",
 "Menstrual phase"
 ],
+c:0
+},
+
+{
+q:"Which hormone rises before ovulation?",
+a:["Estrogen","Cortisol","Adrenaline"],
+c:0
+},
+
+{
+q:"Where are eggs stored?",
+a:["Ovaries","Uterus","Liver"],
+c:0
+},
+
+{
+q:"What is menstruation?",
+a:[
+"Shedding uterine lining",
+"Egg fertilization",
+"Ovulation"
+],
+c:0
+},
+
+{
+q:"Which hormone maintains pregnancy?",
+a:["Progesterone","FSH","LH"],
+c:0
+},
+
+{
+q:"What organ releases LH?",
+a:["Pituitary gland","Heart","Kidney"],
+c:0
+},
+
+{
+q:"Which phase includes menstruation?",
+a:["Menstrual phase","Luteal phase","Ovulation"],
+c:0
+},
+
+{
+q:"What is ovulation?",
+a:[
+"Release of an egg",
+"Start of menstruation",
+"Fertilization"
+],
+c:0
+},
+
+{
+q:"Which hormone stimulates follicles?",
+a:["FSH","LH","Estrogen"],
+c:0
+},
+
+{
+q:"What is the average menstrual cycle length?",
+a:["28 days","7 days","60 days"],
+c:0
+},
+
+{
+q:"What does LH mean?",
+a:[
+"Luteinizing Hormone",
+"Liver Hormone",
+"Linear Hormone"
+],
+c:0
+},
+
+{
+q:"What does FSH mean?",
+a:[
+"Follicle Stimulating Hormone",
+"Female System Hormone",
+"Fertility Signal Hormone"
+],
+c:0
+},
+
+{
+q:"Which organ receives the fertilized egg?",
+a:["Uterus","Lung","Pancreas"],
+c:0
+},
+
+{
+q:"Which hormone peaks during ovulation?",
+a:["LH","Insulin","TSH"],
+c:0
+},
+
+{
+q:"What releases hormones in the brain?",
+a:["Hypothalamus","Stomach","Skin"],
+c:0
+},
+
+{
+q:"What is fertilization?",
+a:[
+"Sperm joins egg",
+"Egg release",
+"Menstruation"
+],
+c:0
+},
+
+{
+q:"Which hormone thickens endometrium?",
+a:["Estrogen","Testosterone","Insulin"],
+c:0
+},
+
+{
+q:"Which hormone dominates luteal phase?",
+a:["Progesterone","FSH","LH"],
+c:0
+},
+
+{
+q:"What are follicles?",
+a:[
+"Egg-containing sacs",
+"Blood cells",
+"Muscles"
+],
+c:0
+},
+
+{
+q:"Which structure connects ovaries and uterus?",
+a:["Fallopian tubes","Spinal cord","Veins"],
+c:0
+},
+
+{
+q:"What is the first phase of the cycle?",
+a:[
+"Menstrual phase",
+"Ovulation",
+"Luteal phase"
+],
+c:0
+},
+
+{
+q:"Which hormone helps egg maturation?",
+a:["FSH","Adrenaline","Cortisol"],
 c:0
 }
 
@@ -258,15 +421,11 @@ function movePacman() {
 
     }
 
-    // mouth animation
-
     pacman.mouth += pacman.mouthSpeed;
 
     if (pacman.mouth > 0.45 || pacman.mouth < 0.05) {
         pacman.mouthSpeed *= -1;
     }
-
-    // angle
 
     if (pacman.dx > 0) pacman.angle = 0;
     if (pacman.dx < 0) pacman.angle = Math.PI;
@@ -322,32 +481,18 @@ function drawMap() {
             const x = col * TILE;
             const y = row * TILE;
 
-            // walls
-
             if (tile === "1") {
 
-                ctx.fillStyle = "#7a00ff";
+                ctx.fillStyle = "#7200ff";
 
-                ctx.fillRect(
-                    x,
-                    y,
-                    TILE,
-                    TILE
-                );
+                ctx.fillRect(x,y,TILE,TILE);
 
                 ctx.strokeStyle = "#ff1493";
                 ctx.lineWidth = 2;
 
-                ctx.strokeRect(
-                    x,
-                    y,
-                    TILE,
-                    TILE
-                );
+                ctx.strokeRect(x,y,TILE,TILE);
 
             }
-
-            // pellets
 
             if (tile === "0") {
 
@@ -385,7 +530,7 @@ function drawPacman() {
 
     ctx.beginPath();
 
-    ctx.moveTo(0, 0);
+    ctx.moveTo(0,0);
 
     ctx.arc(
         0,
@@ -406,7 +551,7 @@ function drawPacman() {
 }
 
 // =====================
-// DRAW SPERM GHOST
+// DRAW SPERM
 // =====================
 
 function drawGhost(g) {
@@ -415,29 +560,25 @@ function drawGhost(g) {
 
     ctx.translate(g.x, g.y);
 
-    // tail
-
     ctx.strokeStyle = g.color;
     ctx.lineWidth = 4;
 
     ctx.beginPath();
 
-    ctx.moveTo(-18, 0);
+    ctx.moveTo(-15,0);
 
     ctx.quadraticCurveTo(
         -28,
-        -10 + Math.sin(Date.now() * 0.01) * 8,
+        Math.sin(Date.now() * 0.01) * 10,
         -40,
         0
     );
 
     ctx.stroke();
 
-    // head
-
     ctx.beginPath();
 
-    ctx.arc(0, 0, 14, 0, Math.PI * 2);
+    ctx.arc(0,0,14,0,Math.PI * 2);
 
     ctx.fillStyle = g.color;
 
@@ -456,8 +597,6 @@ function drawGhost(g) {
 function moveGhosts() {
 
     ghosts.forEach(g => {
-
-        // chase logic
 
         const dx = pacman.x - g.x;
         const dy = pacman.y - g.y;
@@ -486,8 +625,6 @@ function moveGhosts() {
             g.y = futureY;
 
         }
-
-        // collision
 
         const dist = Math.hypot(
             pacman.x - g.x,
@@ -529,7 +666,7 @@ function showQuestion() {
 
     questionText.innerText = q.q;
 
-    answerButtons.forEach((btn, index) => {
+    answerButtons.forEach((btn,index) => {
 
         btn.innerText = q.a[index];
 
@@ -550,6 +687,7 @@ function showQuestion() {
             questionBox.style.display = "none";
 
             gamePaused = false;
+
         };
 
     });
@@ -563,7 +701,7 @@ function showQuestion() {
 
 function updateBars() {
 
-    const value = Math.min(score / 15, 100);
+    const value = Math.min(score / 20, 100);
 
     document.getElementById("estrogenFill")
     .style.width = value + "%";
