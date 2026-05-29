@@ -1,93 +1,390 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>OvuPac</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="style.css">
+<title>OvuPac</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:
+    radial-gradient(circle at center,#3b0027 0%, #120012 45%, #050005 100%);
+    overflow:hidden;
+    font-family:Courier New, monospace;
+    color:white;
+}
+
+/* MENU */
+
+#menuScreen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:rgba(0,0,0,.4);
+    z-index:1000;
+}
+
+.menu-box{
+    width:500px;
+    background:#220022;
+    border:4px solid #ff1493;
+    border-radius:30px;
+    padding:50px;
+    text-align:center;
+
+    box-shadow:
+    0 0 20px #ff1493,
+    0 0 60px #ff1493;
+}
+
+.menu-box h1{
+    font-size:72px;
+    color:#ff4fcf;
+    text-shadow:
+    0 0 10px #ff4fcf,
+    0 0 30px #ff1493;
+}
+
+.menu-box p{
+    margin-top:20px;
+    font-size:28px;
+    color:#ffd6f4;
+}
+
+#playButton{
+    margin-top:40px;
+    width:240px;
+    height:80px;
+
+    border:none;
+    border-radius:20px;
+
+    background:linear-gradient(#ff4fcf,#ff1493);
+
+    color:white;
+    font-size:34px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:
+    0 0 20px #ff1493,
+    0 0 40px #ff1493;
+
+    transition:.2s;
+}
+
+#playButton:hover{
+    transform:scale(1.08);
+}
+
+/* GAME */
+
+#gameWrapper{
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    gap:30px;
+
+    width:100vw;
+    height:100vh;
+
+    padding-top:20px;
+}
+
+/* LEFT */
+
+#leftPanel{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+/* TOP HUD */
+
+#hud{
+    display:flex;
+    gap:20px;
+    margin-bottom:20px;
+}
+
+.hud-box{
+    width:260px;
+    height:80px;
+
+    border-radius:25px;
+
+    background:#220022;
+
+    border:3px solid #ff1493;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:24px;
+
+    box-shadow:
+    0 0 15px #ff1493;
+}
+
+/* CANVAS */
+
+#gameCanvas{
+    background:black;
+
+    border:5px solid #ff1493;
+
+    border-radius:25px;
+
+    box-shadow:
+    0 0 25px #ff1493,
+    0 0 80px #ff1493;
+}
+
+/* RIGHT PANEL */
+
+#rightPanel{
+    width:300px;
+    min-height:720px;
+
+    background:#220022;
+
+    border:5px solid #ff1493;
+
+    border-radius:30px;
+
+    padding:30px;
+
+    box-shadow:
+    0 0 25px #ff1493,
+    0 0 80px #ff1493;
+}
+
+#rightPanel h2{
+    font-size:42px;
+    margin-bottom:40px;
+
+    color:#ff4fcf;
+
+    text-shadow:
+    0 0 10px #ff1493;
+}
+
+.power{
+    margin-bottom:35px;
+}
+
+.power-title{
+    margin-bottom:10px;
+    font-size:24px;
+}
+
+.bar{
+    width:100%;
+    height:22px;
+
+    background:#4a0039;
+
+    border-radius:30px;
+
+    overflow:hidden;
+}
+
+.fill{
+    width:0%;
+    height:100%;
+
+    background:linear-gradient(90deg,#ff4fcf,#ff1493);
+
+    box-shadow:
+    0 0 15px #ff1493;
+
+    transition:.2s;
+}
+
+/* QUESTIONS */
+
+#questionBox{
+    position:fixed;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:700px;
+
+    background:#220022;
+
+    border:5px solid #ff1493;
+
+    border-radius:30px;
+
+    padding:40px;
+
+    z-index:2000;
+
+    display:none;
+
+    box-shadow:
+    0 0 30px #ff1493,
+    0 0 90px #ff1493;
+}
+
+#questionText{
+    font-size:28px;
+    margin-bottom:30px;
+}
+
+.answerBtn{
+    width:100%;
+    height:70px;
+
+    margin-top:15px;
+
+    border:none;
+    border-radius:20px;
+
+    background:#ff1493;
+
+    color:white;
+    font-size:24px;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.answerBtn:hover{
+    transform:scale(1.02);
+}
+
+</style>
+
 </head>
+
 <body>
 
-  <!-- MENU -->
-  <div id="startScreen">
-    <div class="menu-card">
+<!-- MENU -->
 
-      <h1>🌸 OvuPac 🌸</h1>
-      <p>Retro hormonal arcade</p>
+<div id="menuScreen">
 
-      <button id="playBtn">JUGAR</button>
+    <div class="menu-box">
 
-    </div>
-  </div>
+        <h1>🌸 OvuPac 🌸</h1>
 
-  <!-- GAME -->
-  <div id="gameContainer">
+        <p>Retro hormonal arcade</p>
 
-    <div class="hud">
-
-      <div class="hud-box">
-        ❤️ Lives: <span id="lives">3</span>
-      </div>
-
-      <div class="hud-box">
-        ⭐ Score: <span id="score">0</span>
-      </div>
-
-      <div class="hud-box">
-        🧠 Questions: <span id="questions">0</span>
-      </div>
+        <button id="playButton">JUGAR</button>
 
     </div>
 
-    <div class="game-layout">
+</div>
 
-      <canvas id="gameCanvas" width="960" height="640"></canvas>
+<!-- GAME -->
 
-      <div class="powers">
+<div id="gameWrapper">
+
+    <!-- LEFT -->
+
+    <div id="leftPanel">
+
+        <!-- HUD -->
+
+        <div id="hud">
+
+            <div class="hud-box">
+                ❤️ Lives:
+                <span id="lives">3</span>
+            </div>
+
+            <div class="hud-box">
+                ⭐ Score:
+                <span id="score">0</span>
+            </div>
+
+            <div class="hud-box">
+                🧠 Questions:
+                <span id="questions">0</span>
+            </div>
+
+        </div>
+
+        <!-- CANVAS -->
+
+        <canvas
+        id="gameCanvas"
+        width="1100"
+        height="720"></canvas>
+
+    </div>
+
+    <!-- RIGHT -->
+
+    <div id="rightPanel">
 
         <h2>⚡ POWERS</h2>
 
         <div class="power">
-          <span>Estrogen</span>
-          <div class="bar"><div id="bar1"></div></div>
+            <div class="power-title">Estrogen</div>
+            <div class="bar">
+                <div class="fill" id="estrogenFill"></div>
+            </div>
         </div>
 
         <div class="power">
-          <span>LH</span>
-          <div class="bar"><div id="bar2"></div></div>
+            <div class="power-title">LH</div>
+            <div class="bar">
+                <div class="fill" id="lhFill"></div>
+            </div>
         </div>
 
         <div class="power">
-          <span>FSH</span>
-          <div class="bar"><div id="bar3"></div></div>
+            <div class="power-title">FSH</div>
+            <div class="bar">
+                <div class="fill" id="fshFill"></div>
+            </div>
         </div>
 
         <div class="power">
-          <span>Progesterone</span>
-          <div class="bar"><div id="bar4"></div></div>
+            <div class="power-title">Progesterone</div>
+            <div class="bar">
+                <div class="fill" id="progFill"></div>
+            </div>
         </div>
-
-      </div>
 
     </div>
 
-  </div>
+</div>
 
-  <!-- QUESTION MODAL -->
-  <div id="questionModal">
+<!-- QUESTIONS -->
 
-    <div class="question-box">
+<div id="questionBox">
 
-      <h2 id="questionText"></h2>
-
-      <div id="answers"></div>
-
+    <div id="questionText">
+        Question
     </div>
 
-  </div>
+    <button class="answerBtn" id="answer1"></button>
+    <button class="answerBtn" id="answer2"></button>
+    <button class="answerBtn" id="answer3"></button>
 
-  <script src="game.js"></script>
+</div>
+
+<script src="game.js"></script>
 
 </body>
 </html>
