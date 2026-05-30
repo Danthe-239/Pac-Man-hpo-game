@@ -5,6 +5,9 @@
 // ======================================================
 
 const canvas = document.getElementById("gameCanvas");
+console.log("menuScreen:", document.getElementById("menuScreen"));
+console.log("playButton:", document.getElementById("playButton"));
+console.log("gameCanvas:", document.getElementById("gameCanvas"));
 const ctx = canvas.getContext("2d");
 
 // ======================================================
