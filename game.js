@@ -14,8 +14,8 @@ const ctx = canvas.getContext("2d");
 // CONFIG
 // ======================================================
 
-canvas.width = 1120;
-canvas.height = 760;
+canvas.width = 1100;
+canvas.height = 720;
 
 const TILE = 40;
 
