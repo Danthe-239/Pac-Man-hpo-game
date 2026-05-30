@@ -54,8 +54,10 @@ const scoreEl = document.getElementById("score");
 const livesEl = document.getElementById("lives");
 const questionsEl = document.getElementById("questions");
 
-const startMenu = document.getElementById("startMenu");
-const playBtn = document.getElementById("playBtn");
+const startMenu = document.getElementById("menuScreen");
+const playBtn = document.getElementById("playButton");
+console.log(startMenu);
+console.log(playBtn);
 
 // ======================================================
 // CLASSIC STYLE MAP
