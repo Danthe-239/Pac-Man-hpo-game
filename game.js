@@ -1,776 +1,506 @@
-// ==========================================
-// 🌸 OVUPAC - RETRO HORMONAL ARCADE
-// COMPLETE FULL VERSION
-// ==========================================
-
-// =====================
-// CANVAS
-// =====================
+// ======================================================
+// OVUPAC
+// RETRO HORMONAL ARCADE
+// FULL REWRITE
+// ======================================================
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// =====================
-// HUD
-// =====================
+// ======================================================
+// CONFIG
+// ======================================================
 
-const scoreEl = document.getElementById("score");
-const livesEl = document.getElementById("lives");
-const questionsEl = document.getElementById("questions");
+canvas.width = 1120;
+canvas.height = 760;
 
-// =====================
+const TILE = 40;
+
+const COLORS = {
+background: "#050010",
+wall: "#6a00ff",
+wallGlow: "#ff00c8",
+pellet: "#ffd6ff",
+pacman: "#ffe600",
+ui: "#ff4fc3",
+text: "#ffffff",
+pink: "#ff4fd8",
+cyan: "#45e6ff",
+orange: "#ff9f1c"
+};
+
+// ======================================================
 // GAME STATE
-// =====================
+// ======================================================
 
 let gameStarted = false;
+let gameOver = false;
 
 let score = 0;
 let lives = 3;
 let questionsSolved = 0;
 
-let pelletsEaten = 0;
+let powerMode = false;
+let powerTimer = 0;
 
-let gamePaused = false;
+// ======================================================
+// UI
+// ======================================================
 
-// =====================
-// TILE + MAP
-// =====================
+const scoreEl = document.getElementById("score");
+const livesEl = document.getElementById("lives");
+const questionsEl = document.getElementById("questions");
 
-const TILE = 40;
+const startMenu = document.getElementById("startMenu");
+const playBtn = document.getElementById("playBtn");
 
-let map = [
-"111111111111111111111111111",
-"100000000000100000000000001",
-"101111011110101111011111101",
-"100000010000000000010000001",
-"101111010111111110010111101",
-"100000000000100000000000001",
-"101111011110101111011111101",
-"100000010000000000010000001",
-"101111010111111110010111101",
-"100000000000000000000000001",
-"111111111111111111111111111"
+// ======================================================
+// CLASSIC STYLE MAP
+// 1 wall
+// 0 pellet
+// 2 empty
+// ======================================================
+
+const map = [
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1],
+[1,0,1,2,2,1,0,1,2,2,1,0,1,2,2,1,0,1,2,2,1,0,1,2,2,1,0,1],
+[1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,1,1,1,1,0,1,1,1,1,1,1,2,2,1,1,1,1,1,1,0,1,1,1,1,0,1],
+[1,0,0,0,0,1,0,0,0,0,0,0,1,2,2,1,0,0,0,0,0,0,1,0,0,0,0,1],
+[1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1],
+[2,2,2,1,0,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,1,0,1,2,2,2],
+[1,1,1,1,0,1,0,1,1,0,1,1,1,2,2,1,1,1,0,1,1,0,1,0,1,1,1,1],
+[1,0,0,0,0,0,0,1,2,0,0,0,1,2,2,1,0,0,0,0,1,0,0,0,0,0,0,1],
+[1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
-// =====================
-// PLAYER
-// =====================
+// ======================================================
+// PACMAN
+// ======================================================
 
 const pacman = {
-
-    x: TILE * 1.5,
-    y: TILE * 1.5,
-
-    radius: 15,
-
-    speed: 2.1,
-
-    dx: 0,
-    dy: 0,
-
-    nextDx: 0,
-    nextDy: 0,
-
-    angle: 0,
-
-    mouth: 0.2,
-    mouthSpeed: 0.04
-
+x: TILE * 1.5,
+y: TILE * 1.5,
+radius: 15,
+speed: 2.2,
+dx: 0,
+dy: 0,
+nextDx: 0,
+nextDy: 0,
+mouth: 0.2,
+mouthDir: 1,
+rotation: 0
 };
 
-// =====================
-// SPERM GHOSTS
-// =====================
+// ======================================================
+// GHOSTS / ESPERMATOZOIDES
+// ======================================================
 
 const ghosts = [
-
 {
-    x: TILE * 13,
-    y: TILE * 5,
-
-    dx: 1,
-    dy: 0,
-
-    speed: 1.3,
-
-    color: "#ff4fd8"
+x: 520,
+y: 360,
+color: COLORS.pink,
+dx: 1.2,
+dy: 0,
+tail: 0
 },
-
 {
-    x: TILE * 15,
-    y: TILE * 7,
-
-    dx: -1,
-    dy: 0,
-
-    speed: 1.3,
-
-    color: "#38e1ff"
+x: 640,
+y: 360,
+color: COLORS.cyan,
+dx: -1.2,
+dy: 0,
+tail: 0
 },
-
 {
-    x: TILE * 20,
-    y: TILE * 3,
-
-    dx: 0,
-    dy: 1,
-
-    speed: 1.3,
-
-    color: "#ff7b00"
+x: 760,
+y: 360,
+color: COLORS.orange,
+dx: 0,
+dy: 1.2,
+tail: 0
 }
-
 ];
 
-// =====================
-// QUESTIONS
-// =====================
+// ======================================================
+// START BUTTON
+// ======================================================
 
-const questionBox = document.getElementById("questionBox");
-const questionText = document.getElementById("questionText");
+playBtn.addEventListener("click", () => {
 
-const answerButtons = [
-document.getElementById("answer1"),
-document.getElementById("answer2"),
-document.getElementById("answer3")
-];
+startMenu.style.display = "none";
 
-const questions = [
+gameStarted = true;
 
-{
-q:"Which hormone triggers ovulation?",
-a:["LH","FSH","Progesterone"],
-c:0
-},
-
-{
-q:"What hormone prepares the uterus?",
-a:["Progesterone","Insulin","TSH"],
-c:0
-},
-
-{
-q:"What does HPO stand for?",
-a:[
-"Hypothalamic Pituitary Ovarian",
-"Human Pelvic Ovary",
-"Hormonal Pregnancy Organ"
-],
-c:0
-},
-
-{
-q:"Which phase happens after ovulation?",
-a:[
-"Luteal phase",
-"Follicular phase",
-"Menstrual phase"
-],
-c:0
-},
-
-{
-q:"Which hormone rises before ovulation?",
-a:["Estrogen","Cortisol","Adrenaline"],
-c:0
-},
-
-{
-q:"Where are eggs stored?",
-a:["Ovaries","Uterus","Liver"],
-c:0
-},
-
-{
-q:"What is menstruation?",
-a:[
-"Shedding uterine lining",
-"Egg fertilization",
-"Ovulation"
-],
-c:0
-},
-
-{
-q:"Which hormone maintains pregnancy?",
-a:["Progesterone","FSH","LH"],
-c:0
-},
-
-{
-q:"What organ releases LH?",
-a:["Pituitary gland","Heart","Kidney"],
-c:0
-},
-
-{
-q:"Which phase includes menstruation?",
-a:["Menstrual phase","Luteal phase","Ovulation"],
-c:0
-},
-
-{
-q:"What is ovulation?",
-a:[
-"Release of an egg",
-"Start of menstruation",
-"Fertilization"
-],
-c:0
-},
-
-{
-q:"Which hormone stimulates follicles?",
-a:["FSH","LH","Estrogen"],
-c:0
-},
-
-{
-q:"What is the average menstrual cycle length?",
-a:["28 days","7 days","60 days"],
-c:0
-},
-
-{
-q:"What does LH mean?",
-a:[
-"Luteinizing Hormone",
-"Liver Hormone",
-"Linear Hormone"
-],
-c:0
-},
-
-{
-q:"What does FSH mean?",
-a:[
-"Follicle Stimulating Hormone",
-"Female System Hormone",
-"Fertility Signal Hormone"
-],
-c:0
-},
-
-{
-q:"Which organ receives the fertilized egg?",
-a:["Uterus","Lung","Pancreas"],
-c:0
-},
-
-{
-q:"Which hormone peaks during ovulation?",
-a:["LH","Insulin","TSH"],
-c:0
-},
-
-{
-q:"What releases hormones in the brain?",
-a:["Hypothalamus","Stomach","Skin"],
-c:0
-},
-
-{
-q:"What is fertilization?",
-a:[
-"Sperm joins egg",
-"Egg release",
-"Menstruation"
-],
-c:0
-},
-
-{
-q:"Which hormone thickens endometrium?",
-a:["Estrogen","Testosterone","Insulin"],
-c:0
-},
-
-{
-q:"Which hormone dominates luteal phase?",
-a:["Progesterone","FSH","LH"],
-c:0
-},
-
-{
-q:"What are follicles?",
-a:[
-"Egg-containing sacs",
-"Blood cells",
-"Muscles"
-],
-c:0
-},
-
-{
-q:"Which structure connects ovaries and uterus?",
-a:["Fallopian tubes","Spinal cord","Veins"],
-c:0
-},
-
-{
-q:"What is the first phase of the cycle?",
-a:[
-"Menstrual phase",
-"Ovulation",
-"Luteal phase"
-],
-c:0
-},
-
-{
-q:"Which hormone helps egg maturation?",
-a:["FSH","Adrenaline","Cortisol"],
-c:0
-}
-
-];
-
-// =====================
-// START GAME
-// =====================
-
-document
-.getElementById("playButton")
-.addEventListener("click", () => {
-
-    document
-    .getElementById("menuScreen")
-    .style.display = "none";
-
-    gameStarted = true;
-
-    gameLoop();
+requestAnimationFrame(gameLoop);
 
 });
 
-// =====================
+// ======================================================
 // INPUT
-// =====================
+// ======================================================
 
 document.addEventListener("keydown", e => {
 
-    if (e.key === "ArrowUp") {
-        pacman.nextDx = 0;
-        pacman.nextDy = -pacman.speed;
-    }
+if(e.key === "ArrowRight"){
+pacman.nextDx = pacman.speed;
+pacman.nextDy = 0;
+pacman.rotation = 0;
+}
 
-    if (e.key === "ArrowDown") {
-        pacman.nextDx = 0;
-        pacman.nextDy = pacman.speed;
-    }
+if(e.key === "ArrowLeft"){
+pacman.nextDx = -pacman.speed;
+pacman.nextDy = 0;
+pacman.rotation = Math.PI;
+}
 
-    if (e.key === "ArrowLeft") {
-        pacman.nextDx = -pacman.speed;
-        pacman.nextDy = 0;
-    }
+if(e.key === "ArrowUp"){
+pacman.nextDx = 0;
+pacman.nextDy = -pacman.speed;
+pacman.rotation = Math.PI * 1.5;
+}
 
-    if (e.key === "ArrowRight") {
-        pacman.nextDx = pacman.speed;
-        pacman.nextDy = 0;
-    }
+if(e.key === "ArrowDown"){
+pacman.nextDx = 0;
+pacman.nextDy = pacman.speed;
+pacman.rotation = Math.PI / 2;
+}
 
 });
 
-// =====================
+// ======================================================
 // WALL COLLISION
-// =====================
+// ======================================================
 
-function isWall(x, y) {
+function isWall(x, y){
 
-    const col = Math.floor(x / TILE);
-    const row = Math.floor(y / TILE);
+const row = Math.floor(y / TILE);
+const col = Math.floor(x / TILE);
 
-    if (!map[row]) return true;
-
-    return map[row][col] === "1";
+if(
+row < 0 ||
+col < 0 ||
+row >= map.length ||
+col >= map[0].length
+){
+return true;
 }
 
-// =====================
-// MOVE PACMAN
-// =====================
-
-function movePacman() {
-
-    const testX = pacman.x + pacman.nextDx;
-    const testY = pacman.y + pacman.nextDy;
-
-    if (
-        !isWall(testX - pacman.radius, testY - pacman.radius) &&
-        !isWall(testX + pacman.radius, testY - pacman.radius) &&
-        !isWall(testX - pacman.radius, testY + pacman.radius) &&
-        !isWall(testX + pacman.radius, testY + pacman.radius)
-    ) {
-
-        pacman.dx = pacman.nextDx;
-        pacman.dy = pacman.nextDy;
-
-    }
-
-    const futureX = pacman.x + pacman.dx;
-    const futureY = pacman.y + pacman.dy;
-
-    if (
-        !isWall(futureX - pacman.radius, futureY - pacman.radius) &&
-        !isWall(futureX + pacman.radius, futureY - pacman.radius) &&
-        !isWall(futureX - pacman.radius, futureY + pacman.radius) &&
-        !isWall(futureX + pacman.radius, futureY + pacman.radius)
-    ) {
-
-        pacman.x = futureX;
-        pacman.y = futureY;
-
-    }
-
-    pacman.mouth += pacman.mouthSpeed;
-
-    if (pacman.mouth > 0.45 || pacman.mouth < 0.05) {
-        pacman.mouthSpeed *= -1;
-    }
-
-    if (pacman.dx > 0) pacman.angle = 0;
-    if (pacman.dx < 0) pacman.angle = Math.PI;
-    if (pacman.dy > 0) pacman.angle = Math.PI / 2;
-    if (pacman.dy < 0) pacman.angle = -Math.PI / 2;
-}
-
-// =====================
-// EAT PELLETS
-// =====================
-
-function eatPellets() {
-
-    const row = Math.floor(pacman.y / TILE);
-    const col = Math.floor(pacman.x / TILE);
-
-    if (map[row][col] === "0") {
-
-        map[row] =
-            map[row].substring(0, col) +
-            "2" +
-            map[row].substring(col + 1);
-
-        score += 10;
-
-        pelletsEaten++;
-
-        updateBars();
-
-        if (pelletsEaten >= 15) {
-
-            pelletsEaten = 0;
-
-            showQuestion();
-        }
-
-    }
+return map[row][col] === 1;
 
 }
 
-// =====================
+// ======================================================
 // DRAW MAP
-// =====================
+// ======================================================
 
-function drawMap() {
+function drawMap(){
 
-    for (let row = 0; row < map.length; row++) {
+for(let row=0; row<map.length; row++){
 
-        for (let col = 0; col < map[row].length; col++) {
+for(let col=0; col<map[row].length; col++){
 
-            const tile = map[row][col];
+const tile = map[row][col];
 
-            const x = col * TILE;
-            const y = row * TILE;
+const x = col * TILE;
+const y = row * TILE;
 
-            if (tile === "1") {
+if(tile === 1){
 
-                ctx.fillStyle = "#7200ff";
+ctx.fillStyle = COLORS.wall;
+ctx.fillRect(x,y,TILE,TILE);
 
-                ctx.fillRect(x,y,TILE,TILE);
-
-                ctx.strokeStyle = "#ff1493";
-                ctx.lineWidth = 2;
-
-                ctx.strokeRect(x,y,TILE,TILE);
-
-            }
-
-            if (tile === "0") {
-
-                ctx.beginPath();
-
-                ctx.arc(
-                    x + TILE / 2,
-                    y + TILE / 2,
-                    4,
-                    0,
-                    Math.PI * 2
-                );
-
-                ctx.fillStyle = "white";
-                ctx.fill();
-
-            }
-
-        }
-
-    }
+ctx.strokeStyle = COLORS.wallGlow;
+ctx.lineWidth = 2;
+ctx.strokeRect(x,y,TILE,TILE);
 
 }
 
-// =====================
+if(tile === 0){
+
+ctx.beginPath();
+ctx.fillStyle = COLORS.pellet;
+
+ctx.arc(
+x + TILE/2,
+y + TILE/2,
+4,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+}
+
+}
+
+}
+
+}
+
+// ======================================================
 // DRAW PACMAN
-// =====================
+// ======================================================
 
-function drawPacman() {
+function drawPacman(){
 
-    ctx.save();
+ctx.save();
 
-    ctx.translate(pacman.x, pacman.y);
-    ctx.rotate(pacman.angle);
+ctx.translate(pacman.x, pacman.y);
+ctx.rotate(pacman.rotation);
 
-    ctx.beginPath();
+ctx.beginPath();
 
-    ctx.moveTo(0,0);
+ctx.fillStyle = COLORS.pacman;
 
-    ctx.arc(
-        0,
-        0,
-        pacman.radius,
-        pacman.mouth,
-        Math.PI * 2 - pacman.mouth
-    );
+ctx.moveTo(0,0);
 
-    ctx.fillStyle = "#ffe600";
+ctx.arc(
+0,
+0,
+pacman.radius,
+pacman.mouth,
+Math.PI*2 - pacman.mouth
+);
 
-    ctx.shadowColor = "#ffe600";
-    ctx.shadowBlur = 15;
+ctx.fill();
 
-    ctx.fill();
+ctx.restore();
 
-    ctx.restore();
 }
 
-// =====================
-// DRAW SPERM
-// =====================
+// ======================================================
+// DRAW ESPERM GHOST
+// ======================================================
 
-function drawGhost(g) {
+function drawGhost(g){
 
-    ctx.save();
+ctx.save();
 
-    ctx.translate(g.x, g.y);
+ctx.translate(g.x, g.y);
 
-    ctx.strokeStyle = g.color;
-    ctx.lineWidth = 4;
+ctx.beginPath();
+ctx.fillStyle = g.color;
 
-    ctx.beginPath();
+ctx.arc(0,0,14,0,Math.PI*2);
+ctx.fill();
 
-    ctx.moveTo(-15,0);
+for(let i=0; i<5; i++){
 
-    ctx.quadraticCurveTo(
-        -28,
-        Math.sin(Date.now() * 0.01) * 10,
-        -40,
-        0
-    );
+ctx.beginPath();
 
-    ctx.stroke();
+ctx.strokeStyle = g.color;
+ctx.lineWidth = 3;
 
-    ctx.beginPath();
+ctx.moveTo(
+-5,
+0
+);
 
-    ctx.arc(0,0,14,0,Math.PI * 2);
+ctx.quadraticCurveTo(
+-20 - i*4,
+Math.sin(g.tail + i)*8,
+-35 - i*7,
+Math.cos(g.tail + i)*8
+);
 
-    ctx.fillStyle = g.color;
+ctx.stroke();
 
-    ctx.shadowColor = g.color;
-    ctx.shadowBlur = 15;
-
-    ctx.fill();
-
-    ctx.restore();
 }
 
-// =====================
+ctx.restore();
+
+g.tail += 0.15;
+
+}
+
+// ======================================================
+// MOVE PACMAN
+// ======================================================
+
+function movePacman(){
+
+const nextX = pacman.x + pacman.nextDx;
+const nextY = pacman.y + pacman.nextDy;
+
+if(!isWall(nextX, nextY)){
+
+pacman.dx = pacman.nextDx;
+pacman.dy = pacman.nextDy;
+
+}
+
+const futureX = pacman.x + pacman.dx;
+const futureY = pacman.y + pacman.dy;
+
+if(!isWall(futureX, futureY)){
+
+pacman.x += pacman.dx;
+pacman.y += pacman.dy;
+
+}
+
+pacman.mouth += 0.015 * pacman.mouthDir;
+
+if(pacman.mouth > 0.45){
+pacman.mouthDir = -1;
+}
+
+if(pacman.mouth < 0.08){
+pacman.mouthDir = 1;
+}
+
+}
+
+// ======================================================
+// PELLETS
+// ======================================================
+
+function eatPellets(){
+
+const row = Math.floor(pacman.y / TILE);
+const col = Math.floor(pacman.x / TILE);
+
+if(map[row][col] === 0){
+
+map[row][col] = 2;
+
+score += 10;
+
+scoreEl.innerText = score;
+
+}
+
+}
+
+// ======================================================
 // MOVE GHOSTS
-// =====================
+// ======================================================
 
-function moveGhosts() {
+function moveGhosts(){
 
-    ghosts.forEach(g => {
+ghosts.forEach(g => {
 
-        const dx = pacman.x - g.x;
-        const dy = pacman.y - g.y;
+const futureX = g.x + g.dx;
+const futureY = g.y + g.dy;
 
-        if (Math.abs(dx) > Math.abs(dy)) {
+if(isWall(futureX, futureY)){
 
-            g.dx = dx > 0 ? g.speed : -g.speed;
-            g.dy = 0;
+const dirs = [
+[1.2,0],
+[-1.2,0],
+[0,1.2],
+[0,-1.2]
+];
 
-        } else {
+const random = dirs[Math.floor(Math.random()*dirs.length)];
 
-            g.dy = dy > 0 ? g.speed : -g.speed;
-            g.dx = 0;
+g.dx = random[0];
+g.dy = random[1];
 
-        }
+}else{
 
-        const futureX = g.x + g.dx;
-        const futureY = g.y + g.dy;
-
-        if (
-            !isWall(futureX - 12, futureY - 12) &&
-            !isWall(futureX + 12, futureY + 12)
-        ) {
-
-            g.x = futureX;
-            g.y = futureY;
-
-        }
-
-        const dist = Math.hypot(
-            pacman.x - g.x,
-            pacman.y - g.y
-        );
-
-        if (dist < 22) {
-
-            lives--;
-
-            pacman.x = TILE * 1.5;
-            pacman.y = TILE * 1.5;
-
-            if (lives <= 0) {
-
-                alert("GAME OVER");
-
-                location.reload();
-            }
-
-        }
-
-    });
+g.x += g.dx;
+g.y += g.dy;
 
 }
 
-// =====================
-// QUESTIONS
-// =====================
-
-function showQuestion() {
-
-    gamePaused = true;
-
-    const q =
-    questions[
-        Math.floor(Math.random() * questions.length)
-    ];
-
-    questionText.innerText = q.q;
-
-    answerButtons.forEach((btn,index) => {
-
-        btn.innerText = q.a[index];
-
-        btn.onclick = () => {
-
-            if (index === q.c) {
-
-                score += 200;
-
-                questionsSolved++;
-
-            } else {
-
-                lives--;
-
-            }
-
-            questionBox.style.display = "none";
-
-            gamePaused = false;
-
-        };
-
-    });
-
-    questionBox.style.display = "block";
-}
-
-// =====================
-// POWER BARS
-// =====================
-
-function updateBars() {
-
-    const value = Math.min(score / 20, 100);
-
-    document.getElementById("estrogenFill")
-    .style.width = value + "%";
-
-    document.getElementById("lhFill")
-    .style.width = value * 0.8 + "%";
-
-    document.getElementById("fshFill")
-    .style.width = value * 0.6 + "%";
-
-    document.getElementById("progFill")
-    .style.width = value * 0.4 + "%";
-}
-
-// =====================
-// DRAW
-// =====================
-
-function draw() {
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    drawMap();
-
-    drawPacman();
-
-    ghosts.forEach(drawGhost);
+});
 
 }
 
-// =====================
-// UPDATE HUD
-// =====================
+// ======================================================
+// COLLISION
+// ======================================================
 
-function updateHUD() {
+function checkGhostCollision(){
 
-    scoreEl.innerText = score;
-    livesEl.innerText = lives;
-    questionsEl.innerText = questionsSolved;
+ghosts.forEach(g => {
+
+const dx = pacman.x - g.x;
+const dy = pacman.y - g.y;
+
+const dist = Math.sqrt(dx*dx + dy*dy);
+
+if(dist < 24){
+
+lives--;
+
+livesEl.innerText = lives;
+
+pacman.x = TILE * 1.5;
+pacman.y = TILE * 1.5;
+
+if(lives <= 0){
+
+gameOver = true;
 
 }
 
-// =====================
-// GAME LOOP
-// =====================
+}
 
-function gameLoop() {
+});
 
-    if (!gameStarted) return;
+}
 
-    if (!gamePaused) {
+// ======================================================
+// GAME OVER
+// ======================================================
 
-        movePacman();
+function drawGameOver(){
 
-        moveGhosts();
+ctx.fillStyle = "rgba(0,0,0,0.8)";
+ctx.fillRect(0,0,canvas.width,canvas.height);
 
-        eatPellets();
+ctx.fillStyle = "#ff4fc3";
+ctx.font = "70px Arial";
+ctx.textAlign = "center";
 
-    }
+ctx.fillText(
+"GAME OVER",
+canvas.width/2,
+canvas.height/2
+);
 
-    draw();
+}
 
-    updateHUD();
+// ======================================================
+// MAIN LOOP
+// ======================================================
 
-    requestAnimationFrame(gameLoop);
+function gameLoop(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+drawMap();
+
+movePacman();
+
+eatPellets();
+
+moveGhosts();
+
+checkGhostCollision();
+
+drawPacman();
+
+ghosts.forEach(drawGhost);
+
+if(gameOver){
+
+drawGameOver();
+
+return;
+
+}
+
+requestAnimationFrame(gameLoop);
 
 }
